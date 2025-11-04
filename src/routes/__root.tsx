@@ -13,12 +13,13 @@ import ClerkProvider from '@/integrations/clerk/provider'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 
 import appCss from '@/styles.css?url'
-import muiCss from '@/mui.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
-import { StyledEngineProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import theme from '@/theme'
+import { Box } from '@mui/material'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -42,37 +43,33 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       {
         rel: 'stylesheet',
         href: appCss,
-      },
-      {
-        rel: 'stylesheet',
-        href: muiCss,
       }
     ],
   }),
-
   shellComponent: RootDocument,
 });
 
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <StyledEngineProvider enableCssLayer>
-      <GlobalStyles styles="@layer theme, base, mui, components, utilities;"/>
-      <ClerkProvider>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
-      </ClerkProvider>
-
+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+      <ThemeProvider theme={theme}>
+        <ClerkProvider>
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+        </ClerkProvider>
+      </ThemeProvider>
     </StyledEngineProvider>
   )
 }
@@ -86,7 +83,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <Providers>
           <Header />
-          {children}
+          <Box className='p-4 min-h-full'>
+            {children}
+          </Box>
         </Providers>
         <Scripts />
       </body>

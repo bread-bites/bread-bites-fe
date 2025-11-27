@@ -1,6 +1,7 @@
-import { Box, ButtonBase, Divider, Menu, MenuItem } from '@mui/material'
+import { Box, Divider, IconButton, Menu, MenuItem } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useState } from 'react';
 import { SignOutButton } from '@clerk/clerk-react';
@@ -13,15 +14,21 @@ export default function HeaderMenu() {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <Box>
-      <ButtonBase onClick={handleClick}>
+    <>
+      <IconButton onClick={handleClick}>
         <MenuIcon/>
-      </ButtonBase>
+      </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem>
           <Link to='/image/insert' className='flex gap-5'>
             <AddAPhotoIcon />
             Add New Image
+          </Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to='/text/insert' className='flex gap-5'>
+            <NoteAddIcon />
+            Add New Text
           </Link>
         </MenuItem>
         <Divider/>
@@ -34,6 +41,6 @@ export default function HeaderMenu() {
           </SignOutButton>
         </MenuItem>
       </Menu>
-    </Box>
+    </>
   )
 }

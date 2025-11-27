@@ -2,16 +2,17 @@ import { useFieldContext } from "@/hooks/form-context"
 import { FormGroup, TextField,  } from "@mui/material";
 
 interface FormTextAreaProps {
-  label?: string
+  label?: string,
+  minRows?: number
 }
 
-export default function FormTextArea({ label }: FormTextAreaProps) {
+export default function FormTextArea({ label, minRows = 4 }: FormTextAreaProps) {
   const field = useFieldContext<string>();
   return (
     <FormGroup>
       <TextField
         multiline
-        minRows={4}
+        minRows={minRows}
         size="small"
         label={label}
         error={!field.state.meta.isValid}

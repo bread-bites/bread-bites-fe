@@ -4,14 +4,22 @@ import { fieldContext, formContext } from './form-context'
 import FormContainer from '@/components/form/FormContainer'
 import FormTextField from '@/components/form/FormTextField'
 import FormTextArea from '@/components/form/FormTextArea'
+import FormUploadImage from '@/components/form/FormUploadImage'
+import FormSubmitButton from '@/components/form/FormSubmitButton'
+import FormSelect from '@/components/form/FormSelect'
+import FormTagInput from '@/components/form/FormTagInput'
 
 export const { useAppForm } = createFormHook({
   fieldComponents: {
     FormTextField,
-    FormTextArea
+    FormTextArea,
+    FormUploadImage,
+    FormSelect,
+    FormTagInput
   },
   formComponents: {
-    FormContainer
+    FormContainer,
+    FormSubmitButton
   },
   fieldContext,
   formContext,

@@ -9,8 +9,8 @@ export default function FormContainer({ children, className } : { children: Reac
       className={className}
       component='form'
       onSubmit={e => {
-        e.stopPropagation();
         e.preventDefault();
+        e.stopPropagation();
         form.handleSubmit()
       }}
     >

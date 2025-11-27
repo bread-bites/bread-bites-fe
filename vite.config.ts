@@ -14,6 +14,12 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  optimizeDeps: {
+    include: ['cookie']
+  },
+  ssr: {
+    noExternal: ['@mui/*'],
+  },
 })
 
 export default config

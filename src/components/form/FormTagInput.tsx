@@ -65,7 +65,7 @@ export default function FormTagInput({ label, size = 'small', className }: FormT
         onChange={(_, newValue) => handleOnChange(newValue)}
         options={memoData}
         className={clsx(className)}
-        renderInput={(params) => <TextFieldDebounce {...params} size={size} onChange={e => handleOnInputChange(e as string)} label={label || "Tags"} />}
+        renderInput={(params) => <TextFieldDebounce {...params} size={size} onChange={e => handleOnInputChange(e as string)} label={label || 'Tags'} />}
       />
       {!field.state.meta.isValid && (
         <FormHelperText>

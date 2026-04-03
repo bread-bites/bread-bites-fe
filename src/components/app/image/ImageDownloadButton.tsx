@@ -1,5 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Button } from '@mui/material';
+import { m } from '@paraglide/messages';
 import pkg from 'file-saver';
 
 const { saveAs } = pkg;
@@ -18,7 +19,7 @@ export default function ImageUpdateButton({ link, myImage }: { link: string, myI
       startIcon={!myImage && <DownloadIcon />}
     >
       {myImage && <DownloadIcon/>}
-      {!myImage && "Steal"}
+      {!myImage && m.result_image_steal()}
     </Button>
   )
 }

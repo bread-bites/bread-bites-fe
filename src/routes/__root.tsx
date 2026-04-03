@@ -5,23 +5,36 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import Header from '@/components/Header'
-import ClerkProvider from '@/integrations/clerk/provider'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 import appCss from '@/styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/theme'
-import { Box, CssBaseline, GlobalStyles } from '@mui/material'
+import { CssBaseline, GlobalStyles } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import { ModalHookProvider } from '@/hooks/modal-hook-provider'
+import { getLocale } from '@paraglide/runtime'
+import AppClerkProvider from '@/integrations/clerk/provider'
+import { createServerFn } from '@tanstack/react-start'
+import { auth } from '@clerk/tanstack-react-start/server'
 
 interface MyRouterContext {
   queryClient: QueryClient
 }
 
+const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
+  const { userId } = await auth()
+  return {
+    userId,
+  }
+})
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const { userId } = await fetchClerkAuth();
+    return { userID: userId };
+  },
   head: () => ({
     meta: [
       {
@@ -46,35 +59,35 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function Providers({ children }: { children: React.ReactNode }) {
   const emotionCache = createCache({ key: 'css' })
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ClerkProvider>
-          <ModalHookProvider>
-            <>
-              <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
-              {children}
-              <TanStackDevtools
-                config={{ position: 'bottom-right' }}
-                plugins={[
-                  {
-                    name: 'Tanstack Router',
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                  TanStackQueryDevtools,
-                ]}
-              />
-            </>
-          </ModalHookProvider>
-        </ClerkProvider>
-      </ThemeProvider>
-    </CacheProvider>
+    <AppClerkProvider>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+            <ModalHookProvider>
+              <>
+                <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+                {children}
+                <TanStackDevtools
+                  config={{ position: 'bottom-right' }}
+                  plugins={[
+                    {
+                      name: 'Tanstack Router',
+                      render: <TanStackRouterDevtoolsPanel />,
+                    },
+                    TanStackQueryDevtools,
+                  ]}
+                />
+              </>
+            </ModalHookProvider>
+        </ThemeProvider>
+      </CacheProvider>
+    </AppClerkProvider>
   )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang={getLocale()}>
       <head>
         <HeadContent />
       </head>

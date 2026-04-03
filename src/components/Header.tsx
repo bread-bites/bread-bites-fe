@@ -4,6 +4,7 @@ import HeaderMenu from './HeaderMenu'
 import { Link } from '@tanstack/react-router'
 import ImageIcon from '@mui/icons-material/Image';
 import ArticleIcon from '@mui/icons-material/Article';
+import { m } from '@paraglide/messages';
 
 export default function Header() {
   return (
@@ -34,7 +35,7 @@ export default function Header() {
             </Tooltip>
             <SignedOut>
               <SignInButton>
-                <Button color='success' variant='contained'>Lemme In!</Button>
+                <Button color='success' size='small' variant='contained'>{m.main_login()}</Button>
               </SignInButton>
             </SignedOut>
             <SignedIn>

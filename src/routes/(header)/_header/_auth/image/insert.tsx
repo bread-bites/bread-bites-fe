@@ -1,4 +1,4 @@
-import { insertText, insertTextSchema, insertTextSchemaType } from '@/api/text';
+import { insertImage, insertImageSchema, insertImageSchemaType } from '@/api/image';
 import { AGE_RATING_ENUM, AGE_RATING_ENUM_TYPE_VALUE, AGE_RATING_SELECT } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
@@ -9,46 +9,53 @@ import { objectToFormData } from '@/utilities/frontend-api';
 import { Alert, Box, Divider, Typography } from '@mui/material'
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router'
-import { useServerFn } from '@tanstack/react-start';
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createServerFn, useServerFn } from '@tanstack/react-start';
 
-export const Route = createFileRoute('/(header)/_header/text/insert')({
+const getMaxSizeKb = createServerFn().handler(() => Number(process.env.VITE_MAX_UPLOAD_SIZE_KB));
+
+export const Route = createFileRoute('/(header)/_header/_auth/image/insert')({
   component: RouteComponent,
+  loader: () => getMaxSizeKb(),
+  beforeLoad: ({ context }) => {
+    if (!context.userID) throw redirect({ to: '/', search: { login: true } });
+  }
 });
 
 const formOption = formOptions({
   defaultValues: {
     description: '',
-    title: '',
-    content: '',
+    name: '',
     tags: [] as string[],
     source: '',
     ageRating: AGE_RATING_ENUM.GENERAL as unknown as AGE_RATING_ENUM_TYPE_VALUE,
-  } satisfies insertTextSchemaType,
+    image: undefined as unknown as File
+  } satisfies insertImageSchemaType,
   validators: {
-    onChange: insertTextSchema
+    onChange: insertImageSchema
   },
 })
 
 function RouteComponent() {
+  const data = Route.useLoaderData();
   const navigate = Route.useNavigate();
-  const insertTextEndpoint = useServerFn(insertText);
+  const insertImageEndpoint = useServerFn(insertImage);
   const { show } = useModal();
 
   const { mutateAsync } = useMutation({
-    mutationKey: [QUERY_KEY.TEXT],
-    mutationFn: async (data: insertTextSchemaType) => await insertTextEndpoint({ data: objectToFormData(data) }),
+    mutationKey: [QUERY_KEY.IMAGE],
+    mutationFn: async (data: insertImageSchemaType) => await insertImageEndpoint({ data: objectToFormData(data) }),
     onSuccess: () => {
       show({
         title: 'Success',
         type: 'success',
-        message: 'Yay, your copypasta is successfully published 😀',
+        message: 'Yay, your reaction image is successfully published 😀',
         okAction: {
           label: 'Nice',
-          onClick: () => navigate({ to: '/text' })
+          onClick: () => navigate({ to: '/image' })
         }
       });
-      getContext().queryClient.invalidateQueries({ queryKey: [QUERY_KEY.TEXT] });
+      getContext().queryClient.invalidateQueries({ queryKey: [QUERY_KEY.IMAGE] });
     },
     onError: (e: AxiosCustomError) => usualErrorHandler(show, e)
   });
@@ -63,23 +70,23 @@ function RouteComponent() {
   return (
     <form.AppForm>
       <form.FormContainer className='flex gap-4 flex-col p-4'>
-        <Typography variant='h4' className='font-bold'>Insert Text</Typography>
+        <Typography variant='h4' className='font-bold'>Insert Image</Typography>
         <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>1. Cook</Typography>
+          <Typography variant='h6'>1. Upload Image</Typography>
           <Divider />
         </Box>
-        <form.AppField name='content'>
+        <form.AppField name='image'>
           {
-            (field) => <field.FormTextArea minRows={15} label='Content' />
+            (field) => <field.FormUploadImage maxSizeKb={data} />
           }
         </form.AppField>
         <Box className='flex flex-col gap-2'>
           <Typography variant='h6'>2. Additional Info</Typography>
           <Divider />
         </Box>
-        <form.AppField name='title'>
+        <form.AppField name='name'>
           {
-            (field) => <field.FormTextField label='Title' />
+            (field) => <field.FormTextField label='Name' />
           }
         </form.AppField>
         <form.AppField name='description'>
@@ -130,13 +137,15 @@ function RouteComponent() {
         </Box>
         <form.Subscribe selector={x => ({ values: x.values, isValid: x.isFormValid })}>
           {
-            ({ values, isValid }) => isValid && values.content ? (
-              <Box className='flex flex-col gap-4 bg-gray-700/30 p-4 rounded'>
-                <Box className='flex justify-center whitespace-pre-line border-gray-400/30 border-2 rounded p-2 text-sm text-justify'>
-                  {values.content}
+            ({ values, isValid }) => isValid && values.image ? (
+              <Box className='flex max-md:flex-col gap-4 bg-gray-700/30 p-4 rounded'>
+                <Box className='flex flex-col'>
+                  <Box className='flex justify-center'>
+                    <img src={URL.createObjectURL(values.image)} alt='Preview' className='max-w-full max-h-60' />
+                  </Box>
                 </Box>
                 <Box className='flex flex-col'>
-                  <Typography variant='body1'><strong>Title:</strong> {values.title}</Typography>
+                  <Typography variant='body1'><strong>Name:</strong> {values.name}</Typography>
                   <Typography variant='body1'><strong>Description:</strong> {values.description}</Typography>
                   <Typography variant='body1'><strong>Tags:</strong> {values.tags.join(', ')}</Typography>
                   <Typography variant='body1'><strong>Source:</strong> {values.source}</Typography>

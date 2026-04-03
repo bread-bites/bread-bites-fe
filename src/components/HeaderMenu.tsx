@@ -6,6 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { useState } from 'react';
 import { SignOutButton } from '@clerk/clerk-react';
 import { Link } from '@tanstack/react-router';
+import { m } from '@paraglide/messages';
 
 export default function HeaderMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -22,13 +23,13 @@ export default function HeaderMenu() {
         <MenuItem>
           <Link to='/image/insert' className='flex gap-5'>
             <AddAPhotoIcon />
-            Add New Image
+            {m.main_add_image()}
           </Link>
         </MenuItem>
         <MenuItem>
           <Link to='/text/insert' className='flex gap-5'>
             <NoteAddIcon />
-            Add New Text
+            {m.main_add_text()}
           </Link>
         </MenuItem>
         <Divider/>
@@ -36,7 +37,7 @@ export default function HeaderMenu() {
           <SignOutButton>
             <Box className='flex gap-5'>
               <LogoutIcon />
-              Bye
+              {m.main_logout()}
             </Box>
           </SignOutButton>
         </MenuItem>

@@ -1,16 +1,22 @@
+import { getText } from '@/api/text';
+import TextCopyButton from '@/components/app/text/TextCopyButton';
+import TextDeleteButton from '@/components/app/text/TextDeleteButton';
+import TextUpdateButton from '@/components/app/text/TextUpdateButton';
 import { AGE_RATING_ENUM, AGE_RATING_SELECT } from '@/constants/age-rating';
-import { useAppForm } from '@/hooks/form-hook';
-import { Box, Button, Chip, Skeleton, Tooltip, Typography } from '@mui/material';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { z } from 'zod';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import { QUERY_KEY } from '@/constants/query-key';
-import { useServerFn } from '@tanstack/react-start';
-import { getImage } from '@/api/image';
+import { useAppForm } from '@/hooks/form-hook';
 import Masonry from '@mui/lab/Masonry';
-import ImageDownloadButton from '@/components/app/image/ImageDownloadButton';
-import ImageDeleteButton from '@/components/app/image/ImageDeleteButton';
-import ImageUpdateButton from '@/components/app/image/ImageUpdateButton';
+import { Box, Button, Chip, Skeleton, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start';
+import clsx from 'clsx';
+import { useState } from 'react';
+import z from 'zod';
+
+export const Route = createFileRoute('/(header)/_header/text')({
+  component: RouteComponent,
+});
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -19,12 +25,8 @@ const searchParamSchema = z.object({
 });
 type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 
-export const Route = createFileRoute('/(header)/_header/image/')({
-  component: RouteComponent,
-  validateSearch: (search) => searchParamSchema.parse(search),
-});
-
 function RouteComponent() {
+  const [size, setSize] = useState<'xs' | 'sm' | 'md'>('xs')
   const { tag: defaultTag, ageRating: defaultAgeRating } = Route.useSearch() as z.infer<typeof searchParamSchema>;
   const defaultValue: searchParamSchemaType = {
     pageSize: 20,
@@ -32,7 +34,7 @@ function RouteComponent() {
     tag: defaultTag ?? [],
   }
 
-  const getImageEndpoint = useServerFn(getImage);
+  const getTextEndpoint = useServerFn(getText);
   const navigate = useNavigate();
 
   const form = useAppForm({
@@ -42,15 +44,15 @@ function RouteComponent() {
     },
     onSubmit: ({ value }) => {
       navigate({
-        to: '/image',
+        to: '/text',
         search: value
       });
     }
   });
 
   const { data, hasNextPage, fetchNextPage, isFetching } = useInfiniteQuery({
-    queryKey: [QUERY_KEY.IMAGE, defaultValue],
-    queryFn: async ({ pageParam }) => await getImageEndpoint({
+    queryKey: [QUERY_KEY.TEXT, defaultValue],
+    queryFn: async ({ pageParam }) => await getTextEndpoint({
       data: {
         currentPage: pageParam,
         pageSize: defaultValue.pageSize ?? 50,
@@ -61,6 +63,7 @@ function RouteComponent() {
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.pagination.isLastPage ? undefined : lastPage.pagination.currentPage + 1
   });
+
 
   return (
     <Box className='flex flex-col relative'>
@@ -80,16 +83,30 @@ function RouteComponent() {
             </form.AppField>
             <form.FormSubmitButton className=''>Search</form.FormSubmitButton>
           </Box>
-          <Box className='flex gap-2'>
+          <Box className='flex justify-between items-center'>
             {
-              data && (
-                <>
-                  <Typography>{data.pages[0].pagination.totalData} images</Typography>
+              data ? (
+                <Box className='flex gap-2 flex-row'>
+                  <Typography>{data.pages[0].pagination.totalData} copypastas</Typography>
                   <Typography>|</Typography>
                   <Typography>Loaded {data.pages.length ?? 0} / {Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize)} pages</Typography>
-                </>
-              )
+                </Box>
+              ) : <Box>Loading...</Box>
             }
+            <Box className='flex gap-4 items-center'>
+              <Typography>Font Size</Typography>
+              <ToggleButtonGroup value={size} size='small' exclusive onChange={(_, value) => setSize(value)}>
+                <ToggleButton value='xs'>
+                  Tiny
+                </ToggleButton>
+                <ToggleButton value='sm'>
+                  Small
+                </ToggleButton>
+                <ToggleButton value='md'>
+                  Medium
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
           </Box>
         </form.FormContainer>
       </form.AppForm>
@@ -104,10 +121,9 @@ function RouteComponent() {
           ) : (
             <Box className='w-full flex justify-center'>
               <Masonry columns={{
-                xl: Math.min(6, data.pages[0].pagination.totalData),
-                lg: Math.min(5, data.pages[0].pagination.totalData),
-                md: Math.min(4, data.pages[0].pagination.totalData),
-                sm: Math.min(2, data.pages[0].pagination.totalData)
+                xl: Math.min(3, data.pages[0].pagination.totalData),
+                md: Math.min(2, data.pages[0].pagination.totalData),
+                sm: Math.min(1, data.pages[0].pagination.totalData)
               }}
                 spacing={2}
                 defaultHeight={450}
@@ -115,20 +131,26 @@ function RouteComponent() {
                 defaultSpacing={2}
               >
                 {
-                  data.pages.flatMap(x => x.data).map(image => (
-                    <Box className='flex flex-col bg-white/10 rounded gap-4 p-4' key={image.id}>
-                      <img src={image.image} alt={image.name} />
+                  data.pages.flatMap(x => x.data).map(text => (
+                    <Box className='flex flex-col bg-white/10 rounded gap-4 p-4' key={text.id}>
+                      <Box className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
+                        'text-xs' : size === 'xs',
+                        'text-sm' : size === 'sm',
+                        'text-md' : size === 'md',
+                      })}>
+                        {text.content}
+                      </Box>
                       <Box>
                         <Tooltip title='Sauce'>
-                          <Typography className='text-xs! wrap-break-word'>🍅: {image.source ?? '-'}</Typography>
+                          <Typography className='text-xs! wrap-break-word'>🍅: {text.source ?? '-'}</Typography>
                         </Tooltip>
                         <Tooltip title='Description'>
-                          <Typography className='text-xs! wrap-break-word'>📃: {image.description ?? '-'}</Typography>
+                          <Typography className='text-xs! wrap-break-word'>📃: {text.description ?? '-'}</Typography>
                         </Tooltip>
                       </Box>
                       <Box className='flex flex-wrap gap-2'>
                         {
-                          image.tags.map(tag => (
+                          text.tags.map(tag => (
                             <form.Subscribe key={tag} selector={x => x.values.tag}>
                               {
                                 (tagValue) => (
@@ -147,12 +169,12 @@ function RouteComponent() {
                         }
                       </Box>
                       <Box className='flex gap-2'>
-                        <ImageDownloadButton link={image.image} myImage={image.myImage} />
+                        <TextCopyButton content={text.content} myText={text.myText} />
                         {
-                          image.myImage && <ImageDeleteButton image={image.image} id={image.id} />
+                          text.myText && <TextDeleteButton content={text.content} id={text.id} />
                         }
                         {
-                          image.myImage && <ImageUpdateButton id={image.id} />
+                          text.myText && <TextUpdateButton id={text.id} />
                         }
                       </Box>
                     </Box>
@@ -187,4 +209,3 @@ function RouteComponent() {
     </Box>
   )
 }
-

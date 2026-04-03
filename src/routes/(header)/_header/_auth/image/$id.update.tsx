@@ -1,4 +1,4 @@
-import { getTextByID, updateText, updateTextSchema, updateTextSchemaType } from '@/api/text';
+import { getImageByID, updateImage, updateImageSchema, updateImageSchemaType } from '@/api/image';
 import { AGE_RATING_ENUM, AGE_RATING_SELECT } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
@@ -12,37 +12,37 @@ import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start';
 
-export const Route = createFileRoute('/(header)/_header/text/$id/update')({
+export const Route = createFileRoute('/(header)/_header/_auth/image/$id/update')({
   component: RouteComponent,
-  loader: async ({ params }) => (await getTextByID({ data: params.id })).data,
+  loader: async ({ params }) => (await getImageByID({ data: params.id })).data,
 });
 
 const formOption = formOptions({
   validators: {
-    onChange: updateTextSchema
+    onChange: updateImageSchema
   },
 })
 
 function RouteComponent() {
   const data = Route.useLoaderData();
   const navigate = Route.useNavigate();
-  const updateTextEndpoint = useServerFn(updateText);
+  const updateImageEndpoint = useServerFn(updateImage);
   const { show } = useModal();
 
   const { mutateAsync } = useMutation({
-    mutationKey: [QUERY_KEY.TEXT],
-    mutationFn: async (data: updateTextSchemaType) => await updateTextEndpoint({ data: objectToFormData(data) }),
+    mutationKey: [QUERY_KEY.IMAGE],
+    mutationFn: async (data: updateImageSchemaType) => await updateImageEndpoint({ data: objectToFormData(data) }),
     onSuccess: () => {
       show({
         title: 'Success',
         type: 'success',
-        message: 'Yay, your copypasta is successfully updated 😀',
+        message: 'Yay, your reaction image is successfully updated 😀',
         okAction: {
           label: 'Nice',
-          onClick: () => navigate({ to: '/text' })
+          onClick: () => navigate({ to: '/image' })
         }
       });
-      getContext().queryClient.invalidateQueries({ queryKey: [QUERY_KEY.TEXT] });
+      getContext().queryClient.invalidateQueries({ queryKey: [QUERY_KEY.IMAGE] });
     },
     onError: (e: AxiosCustomError) => usualErrorHandler(show, e)
   });
@@ -52,12 +52,11 @@ function RouteComponent() {
     defaultValues: {
       id: data.id,
       description: data.description || "",
-      title: data.title,
-      content: data.content,
+      name: data.name,
       tags: data.tags,
       source: data.source,
       ageRating: data.ageRating,
-    } satisfies updateTextSchemaType,
+    } satisfies updateImageSchemaType,
     onSubmit: async ({ value }) => {
       await mutateAsync(value);
     }
@@ -66,23 +65,21 @@ function RouteComponent() {
   return (
     <form.AppForm>
       <form.FormContainer className='flex gap-4 flex-col p-4'>
-        <Typography variant='h4' className='font-bold'>Update Text</Typography>
+        <Typography variant='h4' className='font-bold'>Update Image</Typography>
         <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>1. Cook</Typography>
+          <Typography variant='h6'>1. Check Your Image</Typography>
           <Divider />
         </Box>
-        <form.AppField name='content'>
-          {
-            (field) => <field.FormTextArea minRows={15} label='Content' />
-          }
-        </form.AppField>
+        <Box className='flex justify-center items-center'>
+          <img src={data.image} alt={data.id} className='h-40' />
+        </Box>
         <Box className='flex flex-col gap-2'>
           <Typography variant='h6'>2. Additional Info</Typography>
           <Divider />
         </Box>
-        <form.AppField name='title'>
+        <form.AppField name='name'>
           {
-            (field) => <field.FormTextField label='Title' />
+            (field) => <field.FormTextField label='Name' />
           }
         </form.AppField>
         <form.AppField name='description'>
@@ -133,13 +130,15 @@ function RouteComponent() {
         </Box>
         <form.Subscribe selector={x => ({ values: x.values, isValid: x.isFormValid })}>
           {
-            ({ values, isValid }) => isValid && values.content ? (
-              <Box className='flex flex-col gap-4 bg-gray-700/30 p-4 rounded'>
-                <Box className='flex justify-center whitespace-pre-line border-gray-400/30 border-2 rounded p-2 text-sm text-justify'>
-                  {values.content}
+            ({ values, isValid }) => isValid ? (
+              <Box className='flex max-md:flex-col gap-4 bg-gray-700/30 p-4 rounded'>
+                <Box className='flex flex-col'>
+                  <Box className='flex justify-center'>
+                    <img src={data.image} alt={data.id} className='h-40' />
+                  </Box>
                 </Box>
                 <Box className='flex flex-col'>
-                  <Typography variant='body1'><strong>Title:</strong> {values.title}</Typography>
+                  <Typography variant='body1'><strong>Name:</strong> {values.name}</Typography>
                   <Typography variant='body1'><strong>Description:</strong> {values.description}</Typography>
                   <Typography variant='body1'><strong>Tags:</strong> {values.tags.join(', ')}</Typography>
                   <Typography variant='body1'><strong>Source:</strong> {values.source}</Typography>

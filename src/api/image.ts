@@ -49,8 +49,7 @@ export const insertImageSchema = z.object({
     .min(1, "Provide a source... unless it's yours :)")
     .max(4000, "Too long! Max 4000 chars"),
   image: z.file("Please upload something 😢")
-    .mime(["image/jpeg", "image/png", "image/webp"], "Image only pls")
-    .max(1024 * Number(import.meta.env.VITE_MAX_UPLOAD_SIZE_KB), "Too big! Max 50KB"),
+    .mime(["image/jpeg", "image/png", "image/webp"], "Image only pls"),
   ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
   tags: z.array(z.string())
     .min(1, "Add at least one tag so other stealer can quickly stumble upon it")

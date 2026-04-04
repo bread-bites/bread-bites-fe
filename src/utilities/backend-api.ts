@@ -42,7 +42,6 @@ export const BACKEND_API = createServerOnlyFn(async () => {
       const d = err.response.data as BadRequestResponse;
       return Promise.reject({ code: 400, data: d.data } satisfies AxiosCustomError);
     }
-    console.log(err.message);
     return Promise.reject({ code: 500, data: "Backend Error" } satisfies AxiosCustomError);
   });
 

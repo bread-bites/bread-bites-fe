@@ -1,3 +1,4 @@
+import { getConfig } from '@/api/config';
 import { insertImage, insertImageSchema, insertImageSchemaType } from '@/api/image';
 import { AGE_RATING_ENUM, AGE_RATING_ENUM_TYPE_VALUE, AGE_RATING_SELECT } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
@@ -10,13 +11,11 @@ import { Alert, Box, Divider, Typography } from '@mui/material'
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { createServerFn, useServerFn } from '@tanstack/react-start';
-
-const getMaxSizeKb = createServerFn().handler(() => Number(process.env.VITE_MAX_UPLOAD_SIZE_KB));
+import { useServerFn } from '@tanstack/react-start';
 
 export const Route = createFileRoute('/(header)/_header/_auth/image/insert')({
   component: RouteComponent,
-  loader: () => getMaxSizeKb(),
+  loader: () => getConfig(),
   beforeLoad: ({ context }) => {
     if (!context.userID) throw redirect({ to: '/', search: { login: true } });
   }
@@ -37,7 +36,7 @@ const formOption = formOptions({
 })
 
 function RouteComponent() {
-  const data = Route.useLoaderData();
+  const { data } = Route.useLoaderData();
   const navigate = Route.useNavigate();
   const insertImageEndpoint = useServerFn(insertImage);
   const { show } = useModal();
@@ -77,7 +76,7 @@ function RouteComponent() {
         </Box>
         <form.AppField name='image'>
           {
-            (field) => <field.FormUploadImage maxSizeKb={data} />
+            (field) => <field.FormUploadImage maxSizeKb={data.maxImageSize} />
           }
         </form.AppField>
         <Box className='flex flex-col gap-2'>

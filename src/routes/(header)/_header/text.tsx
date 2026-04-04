@@ -126,7 +126,6 @@ function RouteComponent() {
                 sm: Math.min(1, data.pages[0].pagination.totalData)
               }}
                 spacing={2}
-                defaultHeight={450}
                 defaultColumns={4}
                 defaultSpacing={2}
               >

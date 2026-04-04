@@ -8,16 +8,14 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 import appCss from '@/styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '@/theme'
-import { CssBaseline, GlobalStyles } from '@mui/material'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
+import { CssBaseline } from '@mui/material'
 import { ModalHookProvider } from '@/hooks/modal-hook-provider'
 import { getLocale } from '@paraglide/runtime'
 import AppClerkProvider from '@/integrations/clerk/provider'
 import { createServerFn } from '@tanstack/react-start'
 import { auth } from '@clerk/tanstack-react-start/server'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { ThemeProvider } from '@/components/theme-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -58,15 +56,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function Providers({ children }: { children: React.ReactNode }) {
-  const emotionCache = createCache({ key: 'css' })
   return (
-    <AppClerkProvider>
-      <CacheProvider value={emotionCache}>
-        <ThemeProvider theme={theme}>
+    <ThemeProvider defaultTheme='dark' storageKey='color-theme'>
+      <TooltipProvider>
+        <AppClerkProvider>
           <CssBaseline />
             <ModalHookProvider>
               <>
-                <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
                 {children}
                 <TanStackDevtools
                   config={{ position: 'bottom-right' }}
@@ -80,19 +76,19 @@ function Providers({ children }: { children: React.ReactNode }) {
                 />
               </>
             </ModalHookProvider>
-        </ThemeProvider>
-      </CacheProvider>
-    </AppClerkProvider>
+        </AppClerkProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()}>
+    <html lang={getLocale()} className='dark' style={{ colorScheme: 'dark' }} >
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className='bg-background'>
         <Providers>
           {children}
         </Providers>

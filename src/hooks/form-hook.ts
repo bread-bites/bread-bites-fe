@@ -8,6 +8,7 @@ import FormUploadImage from '@/components/form/FormUploadImage'
 import FormSubmitButton from '@/components/form/FormSubmitButton'
 import FormSelect from '@/components/form/FormSelect'
 import FormTagInput from '@/components/form/FormTagInput'
+import FormNewTagInput from '@/components/form/FormNewTagInput'
 
 export const { useAppForm } = createFormHook({
   fieldComponents: {
@@ -15,7 +16,9 @@ export const { useAppForm } = createFormHook({
     FormTextArea,
     FormUploadImage,
     FormSelect,
-    FormTagInput
+    FormTagInput,
+
+    FormNewTagInput
   },
   formComponents: {
     FormContainer,

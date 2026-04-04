@@ -1,11 +1,13 @@
 import { useAppForm } from '@/hooks/form-hook'
-import { Alert, Box, Button, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import z from 'zod'
 import ImageIcon from '@mui/icons-material/Image';
 import ArticleIcon from '@mui/icons-material/Article';
 import { SignInButton } from '@clerk/clerk-react';
 import { m } from "@paraglide/messages";
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 const searchParamSchema = z.object({ login: z.boolean().optional() });
 
@@ -48,49 +50,56 @@ function RouteComponent() {
   });
 
   return (
-    <Box className='w-full h-full min-h-[100svh] flex flex-col justify-center items-center p-32 max-md:p-12 gap-4'>
+    <div className='w-full h-full min-h-[100svh] flex flex-col justify-center items-center p-32 max-md:p-12 gap-4'>
       {
-        login && <Alert severity='error'>Login first ah</Alert>
+        login && <p>Login first ah</p>
       }
-      <Typography variant='h1' className='text-8xl! max-md:text-6xl! text-center' fontWeight={700}>{mainGreeting}</Typography>
-      <Typography className='text-2xl! max-md:text-lg! text-center'>{mainTypeHere}</Typography>
+      <h1 className='text-8xl! max-md:text-6xl! text-center font-bold'>{mainGreeting}</h1>
+      <p className='text-2xl! max-md:text-lg! text-center'>{mainTypeHere}</p>
       <form.AppForm>
         <form.FormContainer className='flex gap-4 mt-6 max-md:flex-col w-full'>
           <form.AppField name='option'>
             {
               (field) => (
-                <ToggleButtonGroup size='large' exclusive value={field.state.value} onChange={(_, value) => {
-                  field.handleChange(value);
-                }}>
-                  <Tooltip title='Reaction Images'>
-                    <ToggleButton className="max-md:grow" value={SelectionType.Image}>
-                      <ImageIcon />
-                    </ToggleButton>
+                <ToggleGroup onValueChange={(v) => field.handleChange(v[0] as "image" | "text")} value={[field.state.value]}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ToggleGroupItem className="max-md:grow" value={SelectionType.Image}>
+                        <ImageIcon />
+                      </ToggleGroupItem>
+                    </TooltipTrigger>
+                    <TooltipContent>Image</TooltipContent>
                   </Tooltip>
-                  <Tooltip title='Copypasta'>
-                    <ToggleButton className="max-md:grow" value={SelectionType.Text}>
-                      <ArticleIcon />
-                    </ToggleButton>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ToggleGroupItem className="max-md:grow" value={SelectionType.Text}>
+                        <ArticleIcon />
+                      </ToggleGroupItem>
+                    </TooltipTrigger>
+                    <TooltipContent>Text</TooltipContent>
                   </Tooltip>
-                </ToggleButtonGroup>
+                </ToggleGroup>
               )
             }
           </form.AppField>
           <form.AppField name='tag'>
             {
-              (field) => <field.FormTagInput size='medium' className='grow!' />
+              // (field) => <field.FormTagInput size='medium' className='grow!' />
+              (field) => <div className='w-full'>
+                <field.FormNewTagInput />
+              </div>
             }
           </form.AppField>
         </form.FormContainer>
       </form.AppForm>
-      <Box className='flex gap-8'>
+      <div className='flex gap-8'>
         <SignInButton>
-          <Button variant='contained' color='success'>{mainLogin}</Button>
+          <Button>{mainLogin}</Button>
         </SignInButton>
         <form.AppForm>
           <form.FormSubmitButton onClick={() => form.handleSubmit()} color='primary'>{mainSearchButton}</form.FormSubmitButton>
         </form.AppForm>
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

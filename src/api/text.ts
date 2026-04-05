@@ -3,11 +3,12 @@ import { ENDPOINTS } from "@/constants/endpoint";
 import { BasePaginationResponse, BaseResponse } from "@/model/base-response";
 import { TextResponse } from "@/model/text";
 import { BACKEND_API } from "@/utilities/backend-api";
+import { m } from "@paraglide/messages";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
 export const getTextSchema = z.object({
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  ageRating: z.enum(AGE_RATING_ENUM, m.text_validation_age_rating()),
   tag: z.array(z.string()),
   currentPage: z.number(),
   pageSize: z.number()
@@ -40,20 +41,20 @@ export const getTextByID = createServerFn()
   });
 
 export const insertTextSchema = z.object({
-  title: z.string("Must be something")
-    .min(1, "Give a name for better searching")
-    .max(50, "Too long! Max 50 chars"),
-  description: z.string("Must be something")
-    .max(4000, "Too long! Max 4000 chars"),
-  source: z.string("Must be something")
-    .min(1, "Provide a source... unless it's yours :)")
-    .max(4000, "Too long! Max 4000 chars"),
-  content: z.string("Must be something")
-    .min(1, "Please type something")
-    .max(4000, "What on earth are you typing???"),
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  title: z.string(m.text_validation_title_required())
+    .min(1, m.text_validation_title_min())
+    .max(50, { error: (e) => m.text_validation_title_max({ max: e.maximum }) }),
+  description: z.string(m.text_validation_description_required())
+    .max(4000, { error: (e) => m.text_validation_description_max({ max: e.maximum }) }),
+  source: z.string(m.text_validation_source_required())
+    .min(1, m.text_validation_source_min())
+    .max(4000, { error: (e) => m.text_validation_source_max({ max: e.maximum }) }),
+  content: z.string(m.text_validation_content_required())
+    .min(1, m.text_validation_content_min())
+    .max(4000, { error: (e) => m.text_validation_content_max({ max: e.maximum }) }),
+  ageRating: z.enum(AGE_RATING_ENUM, m.text_validation_age_rating()),
   tags: z.array(z.string())
-    .min(1, "Add at least one tag so other stealer can quickly stumble upon it")
+    .min(1, m.text_validation_tags())
 });
 export type insertTextSchemaType = z.infer<typeof insertTextSchema>;
 export const insertText = createServerFn({ method: 'POST' })
@@ -68,20 +69,20 @@ export const insertText = createServerFn({ method: 'POST' })
 
 export const updateTextSchema = z.object({
   id: z.uuidv7(),
-  title: z.string("Must be something")
-    .min(1, "Give a name for better searching")
-    .max(50, "Too long! Max 50 chars"),
-  description: z.string("Must be something")
-    .max(4000, "Too long! Max 4000 chars"),
-  source: z.string("Must be something")
-    .min(1, "Provide a source... unless it's yours :)")
-    .max(4000, "Too long! Max 4000 chars"),
-  content: z.string("Must be something")
-    .min(1, "Please type something")
-    .max(4000, "What on earth are you typing???"),
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  title: z.string(m.text_validation_title_required())
+    .min(1, m.text_validation_title_min())
+    .max(50, { error: (e) => m.text_validation_title_max({ max: e.maximum }) }),
+  description: z.string(m.text_validation_description_required())
+    .max(4000, { error: (e) => m.text_validation_description_max({ max: e.maximum }) }),
+  source: z.string(m.text_validation_source_required())
+    .min(1, m.text_validation_source_min())
+    .max(4000, { error: (e) => m.text_validation_source_max({ max: e.maximum }) }),
+  content: z.string(m.text_validation_content_required())
+    .min(1, m.text_validation_content_min())
+    .max(4000, { error: (e) => m.text_validation_content_max({ max: e.maximum }) }),
+  ageRating: z.enum(AGE_RATING_ENUM, m.text_validation_age_rating()),
   tags: z.array(z.string())
-    .min(1, "Add at least one tag so other stealer can quickly stumble upon it")
+    .min(1, m.text_validation_tags())
 });
 export type updateTextSchemaType = z.infer<typeof updateTextSchema>;
 export const updateText = createServerFn({ method: 'POST' })

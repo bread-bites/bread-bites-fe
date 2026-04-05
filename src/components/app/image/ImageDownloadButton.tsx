@@ -1,7 +1,7 @@
-import DownloadIcon from '@mui/icons-material/Download';
-import { Button } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { m } from '@paraglide/messages';
 import pkg from 'file-saver';
+import { DownloadIcon } from 'lucide-react';
 
 const { saveAs } = pkg;
 
@@ -11,14 +11,11 @@ export default function ImageUpdateButton({ link, myImage }: { link: string, myI
   }
   return (
     <Button
-      variant='contained'
-      size='small'
+      variant='success'
       onClick={handleDownload}
-      color='success'
       className='grow'
-      startIcon={!myImage && <DownloadIcon />}
     >
-      {myImage && <DownloadIcon/>}
+      {myImage && <DownloadIcon size={28}/>}
       {!myImage && m.result_image_steal()}
     </Button>
   )

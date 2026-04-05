@@ -1,7 +1,5 @@
 import { useFieldContext } from '@/hooks/form-context'
-import { Alert, Box, Button, FormControl, Typography } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import clsx from 'clsx';
 import { useState } from 'react';
 import z from 'zod';
@@ -9,6 +7,9 @@ import { useAppForm } from '@/hooks/form-hook';
 import { compressImage } from '@/utilities/compressor';
 import { friendlySize } from '@/utilities/file';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
+import { Button } from '../ui/button';
+import { m } from '@paraglide/messages';
+import { CloudUploadIcon } from 'lucide-react';
 
 interface FormUploadImageState {
   usedImage?: 'original' | 'edited';
@@ -24,7 +25,7 @@ const compressionSchema = z.object({
 });
 type compressionFormSchemaType = z.infer<typeof compressionSchema>;
 
-export default function FormUploadImage({ maxSizeKb }: { maxSizeKb: number }) {
+export default function FormUploadImage({ maxSize }: { maxSize: number }) {
   // This will be the final value to be submitted
   const field = useFieldContext<File | null>();
 
@@ -97,15 +98,15 @@ export default function FormUploadImage({ maxSizeKb }: { maxSizeKb: number }) {
   })
 
   return (
-    <FormControl className='flex flex-col gap-4 w-full'>
-      <Box className={clsx("grid grid-cols-1 gap-4", {
+    <div className='flex flex-col gap-4 w-full'>
+      <div className={clsx("grid grid-cols-1 gap-4", {
         'md:grid-cols-[3fr_1fr]': state !== null && isImage,
         'md:grid-cols-1': state === null || !isImage,
       })}>
         {/* Left column - Preview */}
-        <Box className='grow'>
+        <div className='grow'>
           {/* Dropzone */}
-          <Box
+          <div
             {...getRootProps()}
             className={clsx('border h-full flex flex-col items-center justify-center cursor-pointer mb-4 p-4', {
               'border-dashed border-gray-400 rounded-md h-48': true,
@@ -116,33 +117,33 @@ export default function FormUploadImage({ maxSizeKb }: { maxSizeKb: number }) {
 
             {/* Not file */}
             {state === null && (
-              <Box className="flex flex-col items-center gap-2 p-4">
-                <CloudUploadIcon className="text-gray-600/50 text-6xl" />
-                <Typography variant="body2" className="text-gray-600/50 text-center">
-                  {'Drag & drop your image here, or click to select your image'}
-                </Typography>
-              </Box>
+              <div className="flex flex-col items-center gap-2 p-4">
+                <CloudUploadIcon size={64} className="text-gray-600/50 text-6xl" />
+                <p className="text-gray-600/50 text-center">
+                  {m.image_uploader_drop()}
+                </p>
+              </div>
             )}
 
             {/* File not image */}
             {state !== null && !isImage && (
-              <Box className="p-4">
-                <Typography variant="body2" className="text-red-500">
-                  Selected file is not an image
-                </Typography>
-              </Box>
+              <div className="p-4">
+                <p className="text-red-500">
+                  {m.image_uploader_not_image()}
+                </p>
+              </div>
             )}
 
             {/* Preview image */}
             {state !== null && isImage && (
               !state.editedImage ? (
-                <Box>
+                <div>
                   <img
                     src={URL.createObjectURL(state.originalImage)}
                     alt="Original"
                     className="w-full max-h-[520px] object-contain"
                   />
-                </Box>
+                </div>
               ) : (
                 <>
                   <ReactCompareSlider
@@ -153,111 +154,107 @@ export default function FormUploadImage({ maxSizeKb }: { maxSizeKb: number }) {
                     itemOne={<ReactCompareSliderImage src={URL.createObjectURL(state.originalImage)} alt="Original" />}
                     itemTwo={<ReactCompareSliderImage src={URL.createObjectURL(state.editedImage)} alt="Edited" />}
                   />
-                  <Typography variant="body2" className="text-gray-600/50 text-center pt-4">
-                    {'Click outside the comparison box to reupload a new image'}
-                  </Typography>
+                  <p className="text-gray-600/50 text-center pt-4">
+                    {m.image_uploader_click_outside()}
+                  </p>
                 </>
               )
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* Right column - Toolbar */}
-        <Box>
+        <div>
           {state !== null && isImage && (
-            <Box className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               {/* Original Image Section */}
-              <Box className="bg-gray-800 p-4 rounded-lg">
-                <Typography variant="h6" className="mb-3">Original Image</Typography>
-                <Box className="flex flex-col gap-2 mb-3">
-                  <Typography className={clsx({
-                    'text-red-500': state.originalImage.size > maxSizeKb * 1024,
-                    'text-green-500': state.originalImage.size <= maxSizeKb * 1024,
-                  })}>Size: {friendlySize(state.originalImage.size)}</Typography>
-                  <Typography>Resolution: {state.originalResolution[0]} x {state.originalResolution[1]}</Typography>
-                </Box>
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <p className="mb-3">{m.image_uploader_original()}</p>
+                <div className="flex flex-col gap-2 mb-3">
+                  <p className={clsx({
+                    'text-red-500': state.originalImage.size > maxSize,
+                    'text-green-500': state.originalImage.size <= maxSize,
+                  })}>{m.size()}: {friendlySize(state.originalImage.size)}</p>
+                  <p>{m.resolution()}: {state.originalResolution[0]} x {state.originalResolution[1]}</p>
+                </div>
                 <Button
-                  variant="contained"
-                  color="primary"
+                  variant="outline"
                   onClick={onPickOriginalImage}
-                  fullWidth
                 >
-                  Use Original Image
+                  {m.image_uploader_use_original()}
                 </Button>
-              </Box>
+              </div>
 
               {/* Compression Section */}
-              <Box className="bg-gray-800 p-4 flex flex-col gap-4 rounded-lg">
-                <Typography variant="h6" className="mb-3">Image Compression</Typography>
+              <div className="bg-gray-800 p-4 flex flex-col gap-4 rounded-lg">
+                <p>{m.image_compression()}</p>
                 {
                   state.editedImage && state.editedResolution && (
-                    <Box className="flex flex-col gap-2 mb-3">
+                    <div className="flex flex-col gap-2 mb-3">
                       {
                         state.editedImage &&
-                        <Typography className={clsx({
-                          'text-red-500'  : state.editedImage.size > maxSizeKb * 1024,
-                          'text-green-500': state.editedImage.size <= maxSizeKb * 1024,
-                        })}>Size: {friendlySize(state.editedImage.size)}</Typography>
+                        <p className={clsx({
+                          'text-red-500'  : state.editedImage.size > maxSize,
+                          'text-green-500': state.editedImage.size <= maxSize,
+                        })}>{m.size()}: {friendlySize(state.editedImage.size)}</p>
                       }
                       {
                         state.editedResolution &&
-                        <Typography>Resolution: {state.editedResolution[0]} x {state.editedResolution[1]}</Typography>
+                        <p>{m.resolution()}: {state.editedResolution[0]} x {state.editedResolution[1]}</p>
                       }
-                    </Box>
+                    </div>
                   )
                 }
                 <compressionForm.AppForm>
-                  <Box className="flex flex-col gap-3">
-                    <Box className="flex gap-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
                       <compressionForm.AppField name='resolution'>
                         {
-                          (field) => <field.FormTextField className='grow' label='Resolution (downsize)' />
+                          (field) => <field.FormTextField topLabel className='grow' label={m.resolution()} />
                         }
                       </compressionForm.AppField>
                       <compressionForm.AppField name='quality'>
                         {
-                          (field) => <field.FormTextField className='grow' label='Quality' />
+                          (field) => <field.FormTextField topLabel className='grow' label={m.quality()} />
                         }
                       </compressionForm.AppField>
-                    </Box>
-                    <Box className="flex gap-2">
+                    </div>
+                    <div className="flex gap-2">
                       <compressionForm.FormSubmitButton
                         className='grow'
                         onClick={() => compressionForm.handleSubmit()}
-                      >Compress Image</compressionForm.FormSubmitButton>
+                      >{m.image_uploader_compressed()}</compressionForm.FormSubmitButton>
                       {state.editedImage && (
                         <Button
-                          type='button'
-                          variant="contained"
-                          color="primary"
+                          variant="outline"
                           className='grow'
                           onClick={onPickCompressedImage}
                         >
-                          Use Compressed Image
+                          {m.image_uploader_use_compressed()}
                         </Button>
                       )}
-                    </Box>
-                  </Box>
+                    </div>
+                  </div>
                 </compressionForm.AppForm>
-              </Box>
+              </div>
               {
                 state && state.usedImage && (
-                  <Alert severity='success'>
-                    Used Image: <strong>{state.usedImage === 'original' ? 'Original Image' : 'Edited Image'}</strong>
-                  </Alert>
+                  <p className='text-green-500'>
+                    {m.image_uploader_used_image()}: <strong>{state.usedImage === 'original' ? m.image_uploader_original() : m.image_uploader_compressed()}</strong>
+                  </p>
                 )
               }
               {
                 !field.state.meta.isValid && (
-                  <Alert severity='error'>
+                  <p className='text-red-500'>
                     {field.state.meta.errors.map(x => x.message).join(', ')}
-                  </Alert>
+                  </p>
                 )
               }
-            </Box>
+            </div>
           )}
-        </Box>
-      </Box>
-    </FormControl>
+        </div>
+      </div>
+    </div>
   )
 }

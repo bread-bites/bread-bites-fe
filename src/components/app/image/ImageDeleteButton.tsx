@@ -1,29 +1,32 @@
 import { deleteImage } from '@/api/image';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { QUERY_KEY } from '@/constants/query-key';
 import useModal, { usualErrorHandler } from '@/hooks/modal-hook-provider';
 import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle, Divider } from '@mui/material';
+import { m } from '@paraglide/messages';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import { TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ImageDeleteButton({ id, image }: { id: string, image: string }) {
   const { show } = useModal();
-  const [state, setState] = useState(false);
+  const [open, setOpen] = useState(false);
   const deleteImageEndpoint = useServerFn(deleteImage);
   const { mutate, isPending } = useMutation({
     mutationKey: [QUERY_KEY.IMAGE],
     mutationFn: async () => await deleteImageEndpoint({ data: { id: id } }),
     onSuccess: () => {
       show({
-        title: 'Success',
+        title: m.success(),
         type: 'success',
-        message: 'Successfully nuked 😔',
+        message: m.image_delete_success(),
         okAction: {
-          label: 'Nuked',
-          onClick: () => setState(false)
+          label: m.ok(),
+          onClick: () => { setOpen(false); }
         }
       });
       getContext().queryClient.invalidateQueries({ queryKey: [QUERY_KEY.IMAGE] });
@@ -31,30 +34,31 @@ export default function ImageDeleteButton({ id, image }: { id: string, image: st
     onError: (e: AxiosCustomError) => usualErrorHandler(show, e)
   });
 
-  const handleClose: DialogProps['onClose'] = () => {
-    return;
-  }
-
   return (
-    <>
-      <Button variant='contained' size='small' color='error' onClick={() => setState(true)}>
-        <DeleteIcon />
-      </Button>
-      <Dialog open={state} onClose={handleClose} >
-        <DialogTitle>Woahh.. Hold on there!</DialogTitle>
-        <Divider />
-        <DialogContent className='flex flex-col gap-4'>
-          <img src={image} alt={id} className='min-h-40 saturate-0' />
-          <DialogContentText>
-            Are you suuuuuuuure to permanently nuke your image 😭
-          </DialogContentText>
-        </DialogContent>
-        <Divider />
-        <DialogActions>
-          <Button variant="contained" loading={isPending} color="success" onClick={() => setState(false)}>Nah I am good</Button>
-          <Button variant="contained" loading={isPending} color="error" onClick={() => mutate()}>Goodbye</Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant='destructive'></Button>}>
+        <TrashIcon size={28} />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className='font-bold'>{m.image_delete_confirm_title()}</DialogTitle>
+          <DialogDescription>{m.image_delete_confirm_message()}</DialogDescription>
+        </DialogHeader>
+        <Separator />
+        <div>
+          <img src={image} alt={id} className=' saturate-0' />
+        </div>
+        <Separator />
+        <DialogFooter>
+          <DialogClose>
+            <Button variant="outline" disabled={isPending} onClick={() => setOpen(false)}>{m.image_delete_confirm_cancel()}</Button>
+          </DialogClose>
+          <Button variant='destructive' onClick={() => mutate()} disabled={isPending}>
+            {m.image_delete_confirm_confirm()}
+          </Button>
+        </DialogFooter>
+
+      </DialogContent>
+    </Dialog>
   )
 }

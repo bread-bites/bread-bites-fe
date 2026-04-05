@@ -1,6 +1,5 @@
-import { AGE_RATING_ENUM, AGE_RATING_SELECT } from '@/constants/age-rating';
+import { AGE_RATING_ENUM } from '@/constants/age-rating';
 import { useAppForm } from '@/hooks/form-hook';
-import { Box, Button, Chip, Skeleton, Tooltip, Typography } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -12,6 +11,9 @@ import ImageDownloadButton from '@/components/app/image/ImageDownloadButton';
 import ImageDeleteButton from '@/components/app/image/ImageDeleteButton';
 import ImageUpdateButton from '@/components/app/image/ImageUpdateButton';
 import { m } from '@paraglide/messages';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import Chip from '@/components/ui/chip';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -23,7 +25,7 @@ type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 export const Route = createFileRoute('/(header)/_header/image')({
   component: RouteComponent,
   loader: () => ({
-    formAgeLabel: m.form_age_label(),
+    formAgeLabel: m.age_rating(),
     mainSearchButton: m.main_search_button()
   }),
   validateSearch: (search) => searchParamSchema.parse(search),
@@ -68,70 +70,79 @@ function RouteComponent() {
   });
 
   return (
-    <Box className='flex flex-col relative'>
-      {/* Search area */}
+    <div className='flex flex-col relative'>
       <form.AppForm>
-        <form.FormContainer className='flex w-full flex-col gap-4 sticky top-0 pt-5 z-50 bg-background-default p-4'>
-          <Box className='flex w-full gap-4'>
-            <form.AppField name='ageRating'>
-              {
-                (field) => <field.FormSelect<number> label={m.form_age_label()} className='min-w-36!' options={AGE_RATING_SELECT} />
-              }
-            </form.AppField>
-            <form.AppField name='tag'>
-              {
-                (field) => <field.FormTagInput className='grow' />
-              }
-            </form.AppField>
-            <form.FormSubmitButton className=''>{m.main_search_button()}</form.FormSubmitButton>
-          </Box>
-          <Box className='flex gap-2'>
-            {
-              data && (
-                <>
-                  <Typography>{m.result_image_total({ totalData: data.pages[0].pagination.totalData })}</Typography>
-                  <Typography>|</Typography>
-                  <Typography>{m.result_image_page({ pageLoaded: (data.pages.length ?? 0).toString(), totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString() })}</Typography>
-                </>
-              )
-            }
-          </Box>
-        </form.FormContainer>
+        <div className='sticky top-0 z-50 pb-3 inset-0 bg-gradient-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
+          <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
+            <div className='flex w-full gap-4 items-end'>
+              <form.AppField name='ageRating'>
+                {
+                  (field) => <field.FormAgeRating className='w-full sm:w-[200px] flex-shrink-0' />
+                }
+              </form.AppField>
+              <form.AppField name='tag'>
+                {
+                  (field) => <field.FormNewTagInput className='grow min-w-0'/>
+                }
+              </form.AppField>
+              <form.FormSubmitButton className='flex-shrink-0'>
+                {m.main_search_button()}
+              </form.FormSubmitButton>
+            </div>
+
+            {/* Stats bar with subtle design */}
+            {data && (
+              <div className='flex items-center justify-center text-xs text-muted-foreground/60'>
+                {m.result_image_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_image_page({ 
+                  pageLoaded: (data.pages.length ?? 0).toString(), 
+                  totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString() 
+                })}
+              </div>
+            )}
+          </form.FormContainer>
+        </div>
       </form.AppForm>
 
-      {/* Result area (infinite query) */}
-      <Box className='p-2 pt-0 flex flex-col gap-4 justify-center items-center'>
+      {/* Result area (infinite query) with enhanced styling */}
+      <div className='px-6 pt-2 pb-8 flex flex-col gap-6 justify-center items-center'>
         {
           !data ? (
-            <Box className='w-full flex flex-col gap-4'>
-              <Skeleton variant='rounded' className='w-full h-64!' />
-            </Box>
+            <div className='w-full flex flex-col gap-4 flex-wrap'>
+              { [...Array(4)].map((_, index) => (
+                <Skeleton key={index} className='h-48 rounded-md' />
+              ))}
+            </div>
           ) : (
-            <Box className='w-full flex justify-center'>
+            <div className='w-full flex justify-center'>
               <Masonry columns={{
                 xl: Math.min(6, data.pages[0].pagination.totalData),
                 lg: Math.min(5, data.pages[0].pagination.totalData),
                 md: Math.min(4, data.pages[0].pagination.totalData),
                 sm: Math.min(2, data.pages[0].pagination.totalData)
               }}
-                spacing={2}
+                spacing={3}
                 defaultHeight={450}
                 defaultColumns={4}
                 defaultSpacing={2}
               >
                 {
                   data.pages.flatMap(x => x.data).map(image => (
-                    <Box className='flex flex-col bg-white/10 rounded gap-4 p-4' key={image.id}>
-                      <img src={image.image} alt={image.name} />
-                      <Box>
-                        <Tooltip title='Sauce'>
-                          <Typography className='text-xs! wrap-break-word'>🍅: {image.source ?? '-'}</Typography>
-                        </Tooltip>
-                        <Tooltip title='Description'>
-                          <Typography className='text-xs! wrap-break-word'>📃: {image.description ?? '-'}</Typography>
-                        </Tooltip>
-                      </Box>
-                      <Box className='flex flex-wrap gap-2'>
+                    <div 
+                      className='group flex flex-col rounded-sm gap-4 p-3 border border-white/10 bg-card/50 backdrop-blur-sm ' 
+                      key={image.id}
+                    >
+                      <div className='overflow-hidden rounded-sm'>
+                        <img 
+                          src={image.image} 
+                          alt={image.name} 
+                          className='w-full h-auto object-cover'
+                        />
+                      </div>
+                      <div>
+                        <p className='text-xs! wrap-break-word'>🍅: {image.source ?? '-'}</p>
+                        <p className='text-xs! wrap-break-word'>📃: {image.description ?? '-'}</p>
+                      </div>
+                      <div className='flex flex-wrap gap-2'>
                         {
                           image.tags.map(tag => (
                             <form.Subscribe key={tag} selector={x => x.values.tag}>
@@ -139,19 +150,17 @@ function RouteComponent() {
                                 (tagValue) => (
                                   <Chip
                                     label={tag}
-                                    size='small'
                                     onClick={() => {
                                       if (!(tagValue ?? []).includes(tag)) form.setFieldValue('tag', [...(tagValue ?? []), tag])
                                     }}
-                                    sx={{ borderRadius: '6px' }}
                                   />
                                 )
                               }
                             </form.Subscribe>
                           ))
                         }
-                      </Box>
-                      <Box className='flex gap-2'>
+                      </div>
+                      <div className='flex gap-2'>
                         <ImageDownloadButton link={image.image} myImage={image.myImage} />
                         {
                           image.myImage && <ImageDeleteButton image={image.image} id={image.id} />
@@ -159,37 +168,39 @@ function RouteComponent() {
                         {
                           image.myImage && <ImageUpdateButton id={image.id} />
                         }
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
                   ))
                 }
               </Masonry>
-            </Box>
+            </div>
           )
         }
         {
           hasNextPage && (
-            <Box className='w-full flex p-2'>
+            <div className='w-full flex px-4'>
               <Button
-                className='grow'
-                fullWidth
-                color='primary'
-                variant='contained'
-                loading={isFetching}
+                className='grow rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-primary/20 hover:to-primary/10 border border-white/10 hover:border-primary/50 transition-all duration-300'
+                variant='outline'
+                disabled={isFetching}
                 onClick={() => fetchNextPage()}
-              >{m.result_more()}</Button>
-            </Box>
+              >
+                {isFetching ? m.result_more_loading() : m.result_more()}
+              </Button>
+            </div>
           )
         }
         {
           !hasNextPage && !isFetching && (
-            <Box className='w-full p-2'>
-              <Typography className=' text-center italic text-white/20'>{m.result_any_bottom()}</Typography>
-            </Box>
+            <div className='w-full px-4 py-8'>
+              <p className='text-center italic text-muted-foreground/40 text-sm'>
+                {m.result_any_bottom()}
+              </p>
+            </div>
           )
         }
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }
 

@@ -1,7 +1,7 @@
-import { TextField, TextFieldProps } from '@mui/material'
 import { useDebouncedCallback } from 'use-debounce'
+import { Input } from '../ui/input';
 
-type TextFieldDebounceProps = TextFieldProps & {
+type TextFieldDebounceProps = React.ComponentProps<"input"> & {
   debounceMs?: number,
   onChange: (v: string) => void,
   size?: 'small' | 'medium'
@@ -13,6 +13,6 @@ export default function TextFieldDebounce(props: TextFieldDebounceProps) {
   }, props.debounceMs ?? 300);
 
   return (
-    <TextField {...props} size={props.size} onChange={e => debounced(e.currentTarget.value)}/>
+    <Input type='text' {...props} onChange={e => debounced(e.currentTarget.value)}/>
   )
 }

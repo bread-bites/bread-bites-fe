@@ -2,17 +2,21 @@ import { getText } from '@/api/text';
 import TextCopyButton from '@/components/app/text/TextCopyButton';
 import TextDeleteButton from '@/components/app/text/TextDeleteButton';
 import TextUpdateButton from '@/components/app/text/TextUpdateButton';
-import { AGE_RATING_ENUM, AGE_RATING_SELECT } from '@/constants/age-rating';
+import { AGE_RATING_ENUM } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
 import Masonry from '@mui/lab/Masonry';
-import { Box, Button, Chip, Skeleton, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start';
 import clsx from 'clsx';
 import { useState } from 'react';
 import z from 'zod';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import Chip from '@/components/ui/chip';
+import { m } from '@paraglide/messages';
 
 export const Route = createFileRoute('/(header)/_header/text')({
   component: RouteComponent,
@@ -66,88 +70,93 @@ function RouteComponent() {
 
 
   return (
-    <Box className='flex flex-col relative'>
-      {/* Search area */}
+    <div className='flex flex-col relative'>
       <form.AppForm>
-        <form.FormContainer className='flex w-full flex-col gap-4 sticky top-0 pt-5 z-50 bg-background-default p-4'>
-          <Box className='flex w-full gap-4'>
-            <form.AppField name='ageRating'>
-              {
-                (field) => <field.FormSelect<number> label='Age Rating' className='min-w-36!' options={AGE_RATING_SELECT} />
-              }
-            </form.AppField>
-            <form.AppField name='tag'>
-              {
-                (field) => <field.FormTagInput className='grow' />
-              }
-            </form.AppField>
-            <form.FormSubmitButton className=''>Search</form.FormSubmitButton>
-          </Box>
-          <Box className='flex justify-between items-center'>
-            {
-              data ? (
-                <Box className='flex gap-2 flex-row'>
-                  <Typography>{data.pages[0].pagination.totalData} copypastas</Typography>
-                  <Typography>|</Typography>
-                  <Typography>Loaded {data.pages.length ?? 0} / {Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize)} pages</Typography>
-                </Box>
-              ) : <Box>Loading...</Box>
-            }
-            <Box className='flex gap-4 items-center'>
-              <Typography>Font Size</Typography>
-              <ToggleButtonGroup value={size} size='small' exclusive onChange={(_, value) => setSize(value)}>
-                <ToggleButton value='xs'>
-                  Tiny
-                </ToggleButton>
-                <ToggleButton value='sm'>
-                  Small
-                </ToggleButton>
-                <ToggleButton value='md'>
-                  Medium
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
-          </Box>
-        </form.FormContainer>
+        <div className='sticky top-0 z-50 pb-3 inset-0 bg-gradient-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
+          <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
+            <div className='flex w-full gap-4 items-end'>
+              <form.AppField name='ageRating'>
+                {
+                  (field) => <field.FormAgeRating className='w-full sm:w-[200px] flex-shrink-0' />
+                }
+              </form.AppField>
+              <form.AppField name='tag'>
+                {
+                  (field) => <field.FormNewTagInput className='grow min-w-0'/>
+                }
+              </form.AppField>
+              <form.FormSubmitButton className='flex-shrink-0'>
+                {m.main_search_button()}
+              </form.FormSubmitButton>
+            </div>
+
+            {/* Stats bar and font size controls */}
+            <div className='flex items-center justify-between gap-4'>
+              {data && (
+                <div className='flex items-center text-xs text-muted-foreground/60'>
+                  {m.result_text_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_text_page({ pageLoaded: data.pages.length, totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize) })}
+                </div>
+              )}
+              <div className='flex items-center gap-2 ml-auto'>
+                <span className='text-xs text-muted-foreground/60'>{m.text_size_label()}</span>
+                <ToggleGroup
+                  className='border border-white/10'
+                  onValueChange={(value) => value[0] && setSize(value[0] as unknown as 'xs' | 'sm' | 'md')}
+                >
+                  <ToggleGroupItem value='xs' className='h-8 px-3 text-xs'>
+                    {m.text_size_tiny()}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value='sm' className='h-8 px-3 text-xs'>
+                    {m.text_size_small()}
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value='md' className='h-8 px-3 text-xs'>
+                    {m.text_size_medium()}
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </div>
+          </form.FormContainer>
+        </div>
       </form.AppForm>
 
-      {/* Result area (infinite query) */}
-      <Box className='p-2 pt-0 flex flex-col gap-4 justify-center items-center'>
+      {/* Result area (infinite query) with enhanced styling */}
+      <div className='px-6 pt-2 pb-8 flex flex-col gap-6 justify-center items-center'>
         {
           !data ? (
-            <Box className='w-full flex flex-col gap-4'>
-              <Skeleton variant='rounded' className='w-full h-64!' />
-            </Box>
+            <div className='w-full flex flex-col gap-4 flex-wrap'>
+              { [...Array(4)].map((_, index) => (
+                <Skeleton key={index} className='h-48 rounded-md' />
+              ))}
+            </div>
           ) : (
-            <Box className='w-full flex justify-center'>
+            <div className='w-full flex justify-center'>
               <Masonry columns={{
                 xl: Math.min(3, data.pages[0].pagination.totalData),
                 md: Math.min(2, data.pages[0].pagination.totalData),
                 sm: Math.min(1, data.pages[0].pagination.totalData)
               }}
-                spacing={2}
+                spacing={3}
                 defaultColumns={4}
                 defaultSpacing={2}
               >
                 {
                   data.pages.flatMap(x => x.data).map(text => (
-                    <Box className='flex flex-col bg-white/10 rounded gap-4 p-4' key={text.id}>
-                      <Box className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
+                    <div 
+                      className='group flex flex-col rounded-sm gap-4 p-3 border border-white/10 bg-card/50 backdrop-blur-sm' 
+                      key={text.id}
+                    >
+                      <div className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
                         'text-xs' : size === 'xs',
                         'text-sm' : size === 'sm',
                         'text-md' : size === 'md',
                       })}>
                         {text.content}
-                      </Box>
-                      <Box>
-                        <Tooltip title='Sauce'>
-                          <Typography className='text-xs! wrap-break-word'>🍅: {text.source ?? '-'}</Typography>
-                        </Tooltip>
-                        <Tooltip title='Description'>
-                          <Typography className='text-xs! wrap-break-word'>📃: {text.description ?? '-'}</Typography>
-                        </Tooltip>
-                      </Box>
-                      <Box className='flex flex-wrap gap-2'>
+                      </div>
+                      <div>
+                        <p className='text-xs! wrap-break-word'>🍅: {text.source ?? '-'}</p>
+                        <p className='text-xs! wrap-break-word'>📃: {text.description ?? '-'}</p>
+                      </div>
+                      <div className='flex flex-wrap gap-2'>
                         {
                           text.tags.map(tag => (
                             <form.Subscribe key={tag} selector={x => x.values.tag}>
@@ -155,19 +164,17 @@ function RouteComponent() {
                                 (tagValue) => (
                                   <Chip
                                     label={tag}
-                                    size='small'
                                     onClick={() => {
                                       if (!(tagValue ?? []).includes(tag)) form.setFieldValue('tag', [...(tagValue ?? []), tag])
                                     }}
-                                    sx={{ borderRadius: '6px' }}
                                   />
                                 )
                               }
                             </form.Subscribe>
                           ))
                         }
-                      </Box>
-                      <Box className='flex gap-2'>
+                      </div>
+                      <div className='flex gap-2'>
                         <TextCopyButton content={text.content} myText={text.myText} />
                         {
                           text.myText && <TextDeleteButton content={text.content} id={text.id} />
@@ -175,36 +182,38 @@ function RouteComponent() {
                         {
                           text.myText && <TextUpdateButton id={text.id} />
                         }
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
                   ))
                 }
               </Masonry>
-            </Box>
+            </div>
           )
         }
         {
           hasNextPage && (
-            <Box className='w-full flex p-2'>
+            <div className='w-full flex px-4'>
               <Button
-                className='grow'
-                fullWidth
-                color='primary'
-                variant='contained'
-                loading={isFetching}
+                className='grow rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-primary/20 hover:to-primary/10 border border-white/10 hover:border-primary/50 transition-all duration-300'
+                variant='outline'
+                disabled={isFetching}
                 onClick={() => fetchNextPage()}
-              >Gimme more</Button>
-            </Box>
+              >
+                {isFetching ? m.result_more_loading() : m.result_more()}
+              </Button>
+            </div>
           )
         }
         {
           !hasNextPage && !isFetching && (
-            <Box className='w-full p-2'>
-              <Typography className=' text-center italic text-white/20'>You've reached the bottom</Typography>
-            </Box>
+            <div className='w-full px-4 py-8'>
+              <p className='text-center italic text-muted-foreground/40 text-sm'>
+                {m.result_any_bottom()}
+              </p>
+            </div>
           )
         }
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

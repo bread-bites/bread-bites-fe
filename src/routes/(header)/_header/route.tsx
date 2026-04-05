@@ -1,5 +1,4 @@
 import Header from '@/components/Header'
-import { Box } from '@mui/material'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(header)/_header')({
@@ -10,9 +9,9 @@ function RouteComponent() {
   return (
     <>
       <Header />
-      <Box className='min-h-full'>
+      <div className='min-h-full'>
         <Outlet/>
-      </Box>
+      </div>
     </>
   )
 }

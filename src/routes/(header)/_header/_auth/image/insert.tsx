@@ -1,13 +1,16 @@
 import { getConfig } from '@/api/config';
 import { insertImage, insertImageSchema, insertImageSchemaType } from '@/api/image';
-import { AGE_RATING_ENUM, AGE_RATING_ENUM_TYPE_VALUE, AGE_RATING_SELECT } from '@/constants/age-rating';
+import RefinedAlert from '@/components/ui/refined-alert';
+import { Separator } from '@/components/ui/separator';
+import { AGE_RATING_ENUM, AGE_RATING_ENUM_TYPE_VALUE, getAgeRatingLabel } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
 import useModal, { usualErrorHandler } from '@/hooks/modal-hook-provider';
 import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
+import { friendlySize } from '@/utilities/file';
 import { objectToFormData } from '@/utilities/frontend-api';
-import { Alert, Box, Divider, Typography } from '@mui/material'
+import { m } from '@paraglide/messages';
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router'
@@ -46,11 +49,11 @@ function RouteComponent() {
     mutationFn: async (data: insertImageSchemaType) => await insertImageEndpoint({ data: objectToFormData(data) }),
     onSuccess: () => {
       show({
-        title: 'Success',
+        title: m.success(),
         type: 'success',
-        message: 'Yay, your reaction image is successfully published 😀',
+        message: m.content_success(),
         okAction: {
-          label: 'Nice',
+          label: m.ok(),
           onClick: () => navigate({ to: '/image' })
         }
       });
@@ -69,43 +72,43 @@ function RouteComponent() {
   return (
     <form.AppForm>
       <form.FormContainer className='flex gap-4 flex-col p-4'>
-        <Typography variant='h4' className='font-bold'>Insert Image</Typography>
-        <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>1. Upload Image</Typography>
-          <Divider />
-        </Box>
+        <p className='font-bold text-3xl'>{m.insert_image_title()}</p>
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-semibold'>1. {m.insert_image_upload({max: friendlySize(data.maxImageSize)})}</p>
+          <Separator />
+        </div>
         <form.AppField name='image'>
           {
-            (field) => <field.FormUploadImage maxSizeKb={data.maxImageSize} />
+            (field) => <field.FormUploadImage maxSize={data.maxImageSize} />
           }
         </form.AppField>
-        <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>2. Additional Info</Typography>
-          <Divider />
-        </Box>
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-semibold'>2. {m.insert_image_info()}</p>
+          <Separator />
+        </div>
         <form.AppField name='name'>
           {
-            (field) => <field.FormTextField label='Name' />
+            (field) => <field.FormTextField label={m.name()} topLabel />
           }
         </form.AppField>
         <form.AppField name='description'>
           {
-            (field) => <field.FormTextArea label='Description' />
+            (field) => <field.FormTextArea label={m.description()} topLabel />
           }
         </form.AppField>
         <form.AppField name='tags'>
           {
-            (field) => <field.FormTagInput label='Tags' />
+            (field) => <field.FormNewTagInput label={m.form_tags_label()} topLabel />
           }
         </form.AppField>
         <form.AppField name='source'>
           {
-            (field) => <field.FormTextField label='Source' />
+            (field) => <field.FormTextField label={m.source()} topLabel />
           }
         </form.AppField>
         <form.AppField name='ageRating'>
           {
-            (field) => <field.FormSelect label='Age Rating' options={AGE_RATING_SELECT} />
+            (field) => <field.FormAgeRating topLabel />
           }
         </form.AppField>
         <form.Subscribe selector={x => x.values.ageRating}>
@@ -114,53 +117,53 @@ function RouteComponent() {
               <>
                 {
                   ageRating === AGE_RATING_ENUM.EXPLICIT && (
-                    <Alert severity='error'>
-                      Explicit content will be blurred by default and only viewable by changing the filter (which is GENERAL by default) in user settings.
-                    </Alert>
+                    <RefinedAlert variant='destructive' title={m.content_explicit_warning_title()}>
+                      {m.content_explicit_warning_message()}
+                    </RefinedAlert>
                   )
                 }
                 {
                   ageRating === AGE_RATING_ENUM.MATURE && (
-                    <Alert severity='warning'>
-                      Mature content will just be marked as Mature. Users will be able to see it by changing the filter (which is GENERAL by default) in user settings.
-                    </Alert>
+                    <RefinedAlert variant='warning' title={m.content_mature_warning_title()}>
+                      {m.content_mature_warning_message()}
+                    </RefinedAlert>
                   )
                 }
               </>
             )
           }
         </form.Subscribe>
-        <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>3. Review your Submission</Typography>
-          <Divider />
-        </Box>
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-semibold'>3. {m.insert_image_review()}</p>
+          <Separator />
+        </div>
         <form.Subscribe selector={x => ({ values: x.values, isValid: x.isFormValid })}>
           {
             ({ values, isValid }) => isValid && values.image ? (
-              <Box className='flex max-md:flex-col gap-4 bg-gray-700/30 p-4 rounded'>
-                <Box className='flex flex-col'>
-                  <Box className='flex justify-center'>
+              <div className='flex max-md:flex-col gap-4 bg-gray-700/30 p-4 rounded'>
+                <div className='flex flex-col'>
+                  <div className='flex justify-center'>
                     <img src={URL.createObjectURL(values.image)} alt='Preview' className='max-w-full max-h-60' />
-                  </Box>
-                </Box>
-                <Box className='flex flex-col'>
-                  <Typography variant='body1'><strong>Name:</strong> {values.name}</Typography>
-                  <Typography variant='body1'><strong>Description:</strong> {values.description}</Typography>
-                  <Typography variant='body1'><strong>Tags:</strong> {values.tags.join(', ')}</Typography>
-                  <Typography variant='body1'><strong>Source:</strong> {values.source}</Typography>
-                  <Typography variant='body1'><strong>Age Rating:</strong> {values.ageRating}</Typography>
-                </Box>
-              </Box>
+                  </div>
+                </div>
+                <div className='flex flex-col'>
+                  <p><strong>{m.name()}:</strong> {values.name}</p>
+                  <p><strong>{m.description()}:</strong> {values.description}</p>
+                  <p><strong>{m.form_tags_label()}:</strong> {values.tags.join(', ')}</p>
+                  <p><strong>{m.source()}:</strong> {values.source}</p>
+                  <p><strong>{m.age_rating()}:</strong> {getAgeRatingLabel(values.ageRating)}</p>
+                </div>
+              </div>
             ) : (
-              <Alert severity='error'>Please recheck your submission. Something is not quite right 🤔.</Alert>
+              <RefinedAlert title='' variant='destructive'>{m.content_error()}</RefinedAlert>
             )
           }
         </form.Subscribe>
-        <Box className='flex flex-col gap-2'>
-          <Typography variant='h6'>4. Submit!</Typography>
-          <Divider />
-        </Box>
-        <form.FormSubmitButton>Submit</form.FormSubmitButton>
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-semibold'>4. {m.insert_image_submit()}</p>
+          <Separator />
+        </div>
+        <form.FormSubmitButton>{m.insert_image_submit()}</form.FormSubmitButton>
       </form.FormContainer>
     </form.AppForm>
   );

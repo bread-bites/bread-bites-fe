@@ -1,5 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { AxiosCustomError } from "@/model/axios-error";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider } from "@mui/material";
 import React, { createContext, useContext, useState } from "react";
 
 type ShowModalParam = {
@@ -40,28 +42,25 @@ export function ModalHookProvider({ children }: { children: React.ReactNode }) {
       {children}
       {
         state !== null &&
-        <Dialog
-          open={state !== null}
-          onClose={() => setState(null)}
-        >
-          <DialogTitle>{ state.title }</DialogTitle>
-          <Divider/>
+        <Dialog open={state !== null} onOpenChange={() => setState(null)}>
           <DialogContent>
-            <DialogContentText>
-              { state.message ?? "Oopsie" }
-            </DialogContentText>
+            <DialogHeader>
+              <DialogTitle className='text-lg font-bold'>{state.title}</DialogTitle>
+              <Separator/>
+              <DialogDescription>{state.message ?? "Oopsie"}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              {
+                state.backAction &&
+                <Button variant="outline" onClick={onClickBack}>{state.backAction.label ?? "Take me back"}</Button>
+              }
+              <Button onClick={onClickOk}>{state.okAction?.label ?? "Ok"}</Button>
+
+            </DialogFooter>
           </DialogContent>
-          <Divider/>
-          <DialogActions>
-            {
-              state.backAction &&
-              <Button variant="contained" color="secondary" onClick={onClickBack}>{state.backAction.label ?? "Take me back"}</Button>
-            }
-            <Button variant="contained" color="success" onClick={onClickOk}>{state.okAction?.label ?? "Ok"}</Button>
-          </DialogActions>
         </Dialog>
       }
-    </ModalContext.Provider>
+    </ModalContext.Provider >
   )
 }
 

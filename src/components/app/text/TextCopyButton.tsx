@@ -1,16 +1,13 @@
-import { Button } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import DoneIcon from '@mui/icons-material/Done';
-import CloseIcon from '@mui/icons-material/Close';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { CheckIcon, XIcon, CopyIcon } from 'lucide-react';
 
-
-export default function ImageUpdateButton({ content, myText }: { content: string, myText: boolean }) {
-  const [state, setState] = useState<'idle' | 'processing' | 'succcess' | 'failed'>('idle');
-  const handleDownload = () => {
+export default function TextCopyButton({ content, myText }: { content: string, myText: boolean }) {
+  const [state, setState] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
+  const handleCopy = () => {
     setState('processing');
     navigator.clipboard.writeText(content).then(function () {
-      setState('succcess');
+      setState('success');
       setTimeout(() => setState('idle'), 500);
     }, function () {
       setState('failed');
@@ -19,21 +16,17 @@ export default function ImageUpdateButton({ content, myText }: { content: string
   }
 
   function IconState() {
-    return state === 'idle' ? <ContentCopyIcon /> :
+    return state === 'idle' ? <CopyIcon size={28} /> :
       state === 'processing' ? <></> :
-        state === 'succcess' ? <DoneIcon/> : <CloseIcon/>
+        state === 'success' ? <CheckIcon size={28} /> : <XIcon size={28} />
   }
 
   return (
     <Button
-      variant='contained'
-      size='small'
-      onClick={handleDownload}
+      variant='success'
+      onClick={handleCopy}
       disabled={state !== 'idle'}
-      loading={state === 'processing'}
-      color='success'
       className='grow'
-      startIcon={!myText && <IconState />}
     >
       {myText && <IconState />}
       {!myText && "Steal"}

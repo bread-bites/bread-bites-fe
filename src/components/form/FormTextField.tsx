@@ -1,24 +1,30 @@
 import { useFieldContext } from "@/hooks/form-context"
-import { FormGroup, TextField,  } from "@mui/material";
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
 
 interface FormTextFieldProps {
   label?: string;
   className?: string;
+  topLabel?: boolean;
 }
 
-export default function FormTextField({ label, className }: FormTextFieldProps) {
+export default function FormTextField({ label, className, topLabel }: FormTextFieldProps) {
   const field = useFieldContext<string>();
   return (
-    <FormGroup>
-      <TextField
-        size="small"
-        label={label}
-        className={className}
-        error={!field.state.meta.isValid}
-        value={field.state.value}
-        onChange={e => field.handleChange(e.currentTarget.value)}
-        helperText={!field.state.meta.isValid && field.state.meta.errors.map(x => x.message).join(', ')}
-      />
-    </FormGroup>
+    <Field className="flex flex-col gap-1">
+      { topLabel && <FieldLabel>{label}</FieldLabel>}
+      <div className="flex flex-col gap-1">
+        <Input
+          placeholder={label}
+          className={className}
+          aria-invalid={!field.state.meta.isValid}
+          value={field.state.value}
+          onChange={e => field.handleChange(e.currentTarget.value)}
+        />
+        {!field.state.meta.isValid && (
+          <FieldDescription aria-invalid>{field.state.meta.errors.map(x => x.message).join(', ')}</FieldDescription>
+        )}
+      </div>
+    </Field>
   )
 }

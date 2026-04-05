@@ -1,25 +1,31 @@
 import { useFieldContext } from "@/hooks/form-context"
-import { FormGroup, TextField,  } from "@mui/material";
+import { Textarea } from "../ui/text-area";
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
 
 interface FormTextAreaProps {
   label?: string,
+  topLabel?: boolean,
   minRows?: number
 }
 
-export default function FormTextArea({ label, minRows = 4 }: FormTextAreaProps) {
+export default function FormTextArea({ label, minRows = 4, topLabel }: FormTextAreaProps) {
   const field = useFieldContext<string>();
   return (
-    <FormGroup>
-      <TextField
-        multiline
-        minRows={minRows}
-        size="small"
-        label={label}
-        error={!field.state.meta.isValid}
-        value={field.state.value}
-        onChange={e => field.handleChange(e.currentTarget.value)}
-        helperText={!field.state.meta.isValid && field.state.meta.errors.map(x => x.message).join(', ')}
-      />
-    </FormGroup>
+    <Field className="flex flex-col gap-1">
+      {label && topLabel && <FieldLabel>{label}</FieldLabel>}
+      <div className="flex flex-col gap-1">
+        <Textarea
+          value={field.state.value}
+          rows={minRows}
+          aria-invalid={!field.state.meta.isValid}
+          onChange={(t) => field.handleChange(t.target.value)}
+        />
+        {
+          !field.state.meta.isValid && (
+            <FieldDescription aria-invalid>{field.state.meta.errors.map(x => x.message).join(', ')}</FieldDescription>
+          )
+        }
+      </div>
+    </Field>
   )
 }

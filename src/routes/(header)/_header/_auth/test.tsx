@@ -7,14 +7,16 @@ export const Route = createFileRoute('/(header)/_header/_auth/test')({
 });
 
 const searchParamSchema = z.object({
-  tag: z.array(z.string()).optional(),
+  tag: z.array(z.string()).min(1, "Tag is required"),
+  description: z.string().min(1, "Description is required")
 });
 type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 
 function RouteComponent() {
   const form = useAppForm({
     defaultValues: {
-      tag: []
+      tag: [],
+      description: ''
     } as searchParamSchemaType,
     validators: {
       onChange: searchParamSchema
@@ -26,11 +28,18 @@ function RouteComponent() {
 
   return (
     <form.AppForm>
-      <form.AppField name='tag'>
-        {
-          (field) => <field.FormNewTagInput label='Test Tag' />
-        }
-      </form.AppField>
+      <form.FormContainer className='p-10 flex flex-col gap-5'>
+        <form.AppField name='tag'>
+          {
+            (field) => <field.FormNewTagInput label='Test Tag' />
+          }
+        </form.AppField>
+        <form.AppField name='description'>
+          {
+            (field) => <field.FormTextArea label='Description' />
+          }
+        </form.AppField>
+      </form.FormContainer>
     </form.AppForm>
   )
 }

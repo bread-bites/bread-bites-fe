@@ -3,11 +3,12 @@ import { ENDPOINTS } from "@/constants/endpoint";
 import { BasePaginationResponse, BaseResponse } from "@/model/base-response";
 import { ImageResponse } from "@/model/image";
 import { BACKEND_API } from "@/utilities/backend-api";
+import { m } from "@paraglide/messages";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
 export const getImageSchema = z.object({
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  ageRating: z.enum(AGE_RATING_ENUM, m.image_validation_age_rating()),
   tag: z.array(z.string()),
   currentPage: z.number(),
   pageSize: z.number()
@@ -40,19 +41,19 @@ export const getImageByID = createServerFn()
   });
 
 export const insertImageSchema = z.object({
-  name: z.string("Must be something")
-    .min(1, "Give a name for better searching")
-    .max(50, "Too long! Max 50 chars"),
-  description: z.string("Must be something")
-    .max(4000, "Too long! Max 4000 chars"),
-  source: z.string("Must be something")
-    .min(1, "Provide a source... unless it's yours :)")
-    .max(4000, "Too long! Max 4000 chars"),
-  image: z.file("Please upload something 😢")
-    .mime(["image/jpeg", "image/png", "image/webp"], "Image only pls"),
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  name: z.string(m.image_validation_name_required())
+    .min(1, m.image_validation_name_min())
+    .max(50, { error: (e) => m.image_validation_name_max({ max: e.maximum }) }),
+  description: z.string(m.image_validation_description_required())
+    .max(4000, { error: (e) => m.image_validation_description_max({ max: e.maximum }) }),
+  source: z.string(m.image_validation_source_required())
+    .min(1, { error: (e) => m.image_validation_source_min({ min: e.minimum }) })
+    .max(4000, { error: (e) => m.image_validation_source_max({ max: e.maximum }) }),
+  image: z.file(m.image_validation_image_required())
+    .mime(["image/jpeg", "image/png", "image/webp"], m.image_validation_image_type()),
+  ageRating: z.enum(AGE_RATING_ENUM, m.image_validation_age_rating()),
   tags: z.array(z.string())
-    .min(1, "Add at least one tag so other stealer can quickly stumble upon it")
+    .min(1, m.image_validation_tags())
 });
 export type insertImageSchemaType = z.infer<typeof insertImageSchema>;
 export const insertImage = createServerFn({ method: 'POST' })
@@ -67,17 +68,17 @@ export const insertImage = createServerFn({ method: 'POST' })
 
 export const updateImageSchema = z.object({
   id: z.uuidv7(),
-  name: z.string("Must be something")
-    .min(1, "Give a name for better searching")
-    .max(50, "Too long! Max 50 chars"),
-  description: z.string("Must be something")
-    .max(4000, "Too long! Max 4000 chars"),
-  source: z.string("Must be something")
-    .min(1, "Provide a source... unless it's yours :)")
-    .max(4000, "Too long! Max 4000 chars"),
-  ageRating: z.enum(AGE_RATING_ENUM, "Select an age rating"),
+  name: z.string(m.image_validation_name_required())
+    .min(1, m.image_validation_name_min())
+    .max(50, { error: (e) => m.image_validation_name_max({ max: e.maximum }) }),
+  description: z.string(m.image_validation_description_required())
+    .max(4000, { error: (e) => m.image_validation_description_max({ max: e.maximum }) }),
+  source: z.string(m.image_validation_source_required())
+    .min(1, { error: (e) => m.image_validation_source_min({ min: e.minimum }) })
+    .max(4000, { error: (e) => m.image_validation_source_max({ max: e.maximum }) }),
+  ageRating: z.enum(AGE_RATING_ENUM, m.image_validation_age_rating()),
   tags: z.array(z.string())
-    .min(1, "Add at least one tag so other stealer can quickly stumble upon it")
+    .min(1, m.image_validation_tags())
 });
 export type updateImageSchemaType = z.infer<typeof updateImageSchema>;
 export const updateImage = createServerFn({ method: 'POST' })

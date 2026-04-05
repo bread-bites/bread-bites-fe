@@ -8,7 +8,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 import appCss from '@/styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
-import { CssBaseline } from '@mui/material'
 import { ModalHookProvider } from '@/hooks/modal-hook-provider'
 import { getLocale } from '@paraglide/runtime'
 import AppClerkProvider from '@/integrations/clerk/provider'
@@ -58,7 +57,6 @@ function Providers({ children }: { children: React.ReactNode }) {
   return (
     <TooltipProvider>
       <AppClerkProvider>
-        <CssBaseline />
         <ModalHookProvider>
           <>
             {children}

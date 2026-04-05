@@ -1,13 +1,11 @@
 import { useFormContext } from '@/hooks/form-context';
-import { Box } from '@mui/material';
 import React from 'react';
 
 export default function FormContainer({ children, className } : { children: React.ReactNode, className?: string }) {
   const form = useFormContext();
   return (
-    <Box
+    <form
       className={className}
-      component='form'
       onSubmit={e => {
         e.preventDefault();
         e.stopPropagation();
@@ -15,6 +13,6 @@ export default function FormContainer({ children, className } : { children: Reac
       }}
     >
       {children}
-    </Box>
+    </form>
   )
 }

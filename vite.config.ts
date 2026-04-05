@@ -35,9 +35,9 @@ const config = defineConfig({
   optimizeDeps: {
     include: ['cookie']
   },
-  ssr: {
-    noExternal: ['@mui/*'],
-  },
+  // ssr: {
+  //   noExternal: ['@mui/*'],
+  // },
 })
 
 export default config

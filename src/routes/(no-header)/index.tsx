@@ -54,7 +54,7 @@ function RouteComponent() {
       {
         login && <p>Login first ah</p>
       }
-      <h1 className='text-8xl! max-md:text-6xl! text-center font-bold'>{mainGreeting}</h1>
+      <h1 className='text-8xl! max-md:text-6xl! text-center font-bold dark'>{mainGreeting}</h1>
       <p className='text-2xl! max-md:text-lg! text-center'>{mainTypeHere}</p>
       <form.AppForm>
         <form.FormContainer className='flex gap-4 mt-6 max-md:flex-col w-full'>

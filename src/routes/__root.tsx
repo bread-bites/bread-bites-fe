@@ -15,7 +15,6 @@ import AppClerkProvider from '@/integrations/clerk/provider'
 import { createServerFn } from '@tanstack/react-start'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { ThemeProvider } from '@/components/theme-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -57,38 +56,36 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider defaultTheme='dark' storageKey='color-theme'>
-      <TooltipProvider>
-        <AppClerkProvider>
-          <CssBaseline />
-            <ModalHookProvider>
-              <>
-                {children}
-                <TanStackDevtools
-                  config={{ position: 'bottom-right' }}
-                  plugins={[
-                    {
-                      name: 'Tanstack Router',
-                      render: <TanStackRouterDevtoolsPanel />,
-                    },
-                    TanStackQueryDevtools,
-                  ]}
-                />
-              </>
-            </ModalHookProvider>
-        </AppClerkProvider>
-      </TooltipProvider>
-    </ThemeProvider>
+    <TooltipProvider>
+      <AppClerkProvider>
+        <CssBaseline />
+        <ModalHookProvider>
+          <>
+            {children}
+            <TanStackDevtools
+              config={{ position: 'bottom-right' }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+                TanStackQueryDevtools,
+              ]}
+            />
+          </>
+        </ModalHookProvider>
+      </AppClerkProvider>
+    </TooltipProvider>
   )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()} className='dark' style={{ colorScheme: 'dark' }} >
+    <html lang={getLocale()} className='dark'>
       <head>
         <HeadContent />
       </head>
-      <body className='bg-background'>
+      <body>
         <Providers>
           {children}
         </Providers>

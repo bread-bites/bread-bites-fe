@@ -6,10 +6,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root, html {
-  color-scheme: 'dark';
-}
-
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: 'Inter Variable', sans-serif;

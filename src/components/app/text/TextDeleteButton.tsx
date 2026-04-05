@@ -6,6 +6,7 @@ import { QUERY_KEY } from '@/constants/query-key';
 import useModal, { usualErrorHandler } from '@/hooks/modal-hook-provider';
 import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
+import { m } from '@paraglide/messages';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { TrashIcon } from 'lucide-react';
@@ -20,11 +21,11 @@ export default function TextDeleteButton({ id, content }: { id: string, content:
     mutationFn: async () => await deleteTextEndpoint({ data: { id: id } }),
     onSuccess: () => {
       show({
-        title: 'Success',
+        title: m.success(),
         type: 'success',
-        message: 'Successfully nuked 😔',
+        message: m.text_delete_success(),
         okAction: {
-          label: 'Nuked',
+          label: m.ok(),
           onClick: () => { setOpen(false); }
         }
       });
@@ -40,8 +41,8 @@ export default function TextDeleteButton({ id, content }: { id: string, content:
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className='font-bold'>Woahh.. Hold on there!</DialogTitle>
-          <DialogDescription>Are you suuuuuure to permanently nuke your text 😭</DialogDescription>
+          <DialogTitle className='font-bold'>{m.text_delete_confirm_title()}</DialogTitle>
+          <DialogDescription>{m.text_delete_confirm_message()}</DialogDescription>
         </DialogHeader>
         <Separator />
         <div className='p-4 bg-muted/50 rounded-sm max-h-64 overflow-auto'>
@@ -50,10 +51,10 @@ export default function TextDeleteButton({ id, content }: { id: string, content:
         <Separator />
         <DialogFooter>
           <DialogClose>
-            <Button variant="outline" disabled={isPending} onClick={() => setOpen(false)}>Nah I am good</Button>
+            <Button variant="outline" disabled={isPending} onClick={() => setOpen(false)}>{m.text_delete_confirm_cancel()}</Button>
           </DialogClose>
           <Button variant='destructive' onClick={() => mutate()} disabled={isPending}>
-            Goodbye
+            {m.text_delete_confirm_confirm()}
           </Button>
         </DialogFooter>
       </DialogContent>

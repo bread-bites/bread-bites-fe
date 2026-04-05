@@ -16,7 +16,7 @@ export default function ImageUpdateButton({ link, myImage }: { link: string, myI
       className='grow'
     >
       {myImage && <DownloadIcon size={28}/>}
-      {!myImage && m.result_image_steal()}
+      {!myImage && m.result_steal()}
     </Button>
   )
 }

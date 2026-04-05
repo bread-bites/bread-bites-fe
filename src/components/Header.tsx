@@ -28,7 +28,7 @@ export default function Header() {
                 </Button>
               </Link>
             </TooltipTrigger>
-            <TooltipContent>Image (Reaction)</TooltipContent>
+            <TooltipContent>{m.image()}</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -39,7 +39,7 @@ export default function Header() {
                 </Button>
               </Link>
             </TooltipTrigger>
-            <TooltipContent>Copypasta</TooltipContent>
+            <TooltipContent>{m.text()}</TooltipContent>
           </Tooltip>
 
           <HeaderLanguage/>

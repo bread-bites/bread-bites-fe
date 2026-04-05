@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { CheckIcon, XIcon, CopyIcon } from 'lucide-react';
+import { m } from '@paraglide/messages';
 
 export default function TextCopyButton({ content, myText }: { content: string, myText: boolean }) {
   const [state, setState] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
@@ -29,7 +30,7 @@ export default function TextCopyButton({ content, myText }: { content: string, m
       className='grow'
     >
       {myText && <IconState />}
-      {!myText && "Steal"}
+      {!myText && m.result_steal()}
     </Button>
   )
 }

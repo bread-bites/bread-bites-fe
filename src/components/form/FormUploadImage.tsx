@@ -210,12 +210,12 @@ export default function FormUploadImage({ maxSize }: { maxSize: number }) {
                     <div className="flex gap-2">
                       <compressionForm.AppField name='resolution'>
                         {
-                          (field) => <field.FormTextField topLabel className='grow' label={m.resolution()} />
+                          (field) => <field.FormNumberField min={0.1} max={1} step={0.1} topLabel className='grow' label={m.resolution()} />
                         }
                       </compressionForm.AppField>
                       <compressionForm.AppField name='quality'>
                         {
-                          (field) => <field.FormTextField topLabel className='grow' label={m.quality()} />
+                          (field) => <field.FormNumberField min={0.1} max={1} step={0.1} topLabel className='grow' label={m.quality()} />
                         }
                       </compressionForm.AppField>
                     </div>

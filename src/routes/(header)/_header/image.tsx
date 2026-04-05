@@ -115,10 +115,10 @@ function RouteComponent() {
           ) : (
             <div className='w-full flex justify-center'>
               <Masonry columns={{
-                xl: Math.min(6, data.pages[0].pagination.totalData),
-                lg: Math.min(5, data.pages[0].pagination.totalData),
-                md: Math.min(4, data.pages[0].pagination.totalData),
-                sm: Math.min(2, data.pages[0].pagination.totalData)
+                xl: 6,
+                lg: 5,
+                md: 4,
+                sm: 2
               }}
                 spacing={3}
                 defaultHeight={450}

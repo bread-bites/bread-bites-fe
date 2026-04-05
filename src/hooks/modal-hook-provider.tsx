@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { AxiosCustomError } from "@/model/axios-error";
+import { m } from "@paraglide/messages";
 import React, { createContext, useContext, useState } from "react";
 
 type ShowModalParam = {
@@ -47,14 +48,14 @@ export function ModalHookProvider({ children }: { children: React.ReactNode }) {
             <DialogHeader>
               <DialogTitle className='text-lg font-bold'>{state.title}</DialogTitle>
               <Separator/>
-              <DialogDescription>{state.message ?? "Oopsie"}</DialogDescription>
+              <DialogDescription>{state.message ?? m.error()}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               {
                 state.backAction &&
-                <Button variant="outline" onClick={onClickBack}>{state.backAction.label ?? "Take me back"}</Button>
+                <Button variant="outline" onClick={onClickBack}>{state.backAction.label ?? m.back()}</Button>
               }
-              <Button onClick={onClickOk}>{state.okAction?.label ?? "Ok"}</Button>
+              <Button onClick={onClickOk}>{state.okAction?.label ?? m.ok()}</Button>
 
             </DialogFooter>
           </DialogContent>
@@ -69,10 +70,10 @@ const useModal = () => useContext(ModalContext);
 export const usualErrorHandler = (show: (data: ShowModalParam) => void, e: AxiosCustomError) => {
   show({
     type: 'error',
-    title: 'Oops... something is wrong 😭',
+    title: m.something_error(),
     message: e.code === 400 ? e.data[Object.keys(e.data)[0]][0] : e.data,
     okAction: {
-      label: 'Ouch...'
+      label: m.error()
     }
   })
 }

@@ -9,10 +9,12 @@ import FormSubmitButton from '@/components/form/FormSubmitButton'
 import FormSelect from '@/components/form/FormSelect'
 import FormNewTagInput from '@/components/form/FormNewTagInput'
 import FormAgeRating from '@/components/form/FormAgeRating'
+import FormNumberField from '@/components/form/FormNumberField'
 
 export const { useAppForm } = createFormHook({
   fieldComponents: {
     FormTextField,
+    FormNumberField,
     FormTextArea,
     FormUploadImage,
     FormSelect,

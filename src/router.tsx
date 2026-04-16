@@ -18,6 +18,8 @@ export const getRouter = () => {
       input: ({ url }) => deLocalizeUrl(url),
       output: ({ url }) => localizeUrl(url)
     },
+    defaultPreloadStaleTime: 0,
+    scrollRestoration: true,
     defaultErrorComponent: () => (<ErrorPage />),
     Wrap: (props: { children: React.ReactNode }) => {
       return (

@@ -36,7 +36,7 @@ export const getTextByID = createServerFn()
   .inputValidator(z.uuidv7())
   .handler(async ({ data }) => {
     const client = await BACKEND_API();
-    const res = await client.get<BaseResponse<TextResponse>>(`${ENDPOINTS.TEXT}/${data}`,);
+    const res = await client.get<BaseResponse<TextResponse>>(ENDPOINTS.TEXT_ID(data),);
     return res.data;
   });
 
@@ -103,5 +103,5 @@ export const deleteText = createServerFn({ method: 'POST' })
   .inputValidator(deleteTextSchema)
   .handler(async ({ data }) => {
     const client = await BACKEND_API();
-    await client.delete<BaseResponse<{ id: string }>>(`${ENDPOINTS.TEXT}/${data.id}`);
+    await client.delete<BaseResponse<{ id: string }>>(ENDPOINTS.TEXT_ID(data.id));
   });

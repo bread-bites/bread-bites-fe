@@ -56,7 +56,7 @@ export default function FormNewTagInput({ label, topLabel = false, className = '
   return (
     <Field className="flex flex-col gap-1">
       {topLabel && <FieldLabel>{label ?? m.form_tags_label()}</FieldLabel>}
-      <div className={clsx('flex flex-col gap-1')}>
+      <div className="flex flex-col gap-1">
         <Combobox
           multiple
           value={field.state.value || []}
@@ -74,7 +74,7 @@ export default function FormNewTagInput({ label, topLabel = false, className = '
               onChange={(e) => debounced(e.target.value)}
             />
           </ComboboxChips>
-          <ComboboxContent aria-invalid={!field.state.meta.isValid} className="w-full">
+          <ComboboxContent aria-invalid={!field.state.meta.isValid} alignOffset={-10} sideOffset={10} className='min-w-[calc(var(--anchor-width)+--spacing(5))]'>
             {(!isEnabled) && (
               <ComboboxEmpty>{m.form_tags_placeholder()}</ComboboxEmpty>
             )}

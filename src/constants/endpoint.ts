@@ -1,6 +1,8 @@
 export const ENDPOINTS = {
   TAG: '/tag',
   IMAGE: '/image',
-  CONFIG: '/config',
-  TEXT: '/text'
+  IMAGE_ID: (id: string) => `/image/${id}`,
+  TEXT: '/text',
+  TEXT_ID: (id: string) => `/text/${id}`,
+  CONFIG: '/config'
 }

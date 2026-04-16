@@ -24,7 +24,7 @@ export default function FormAgeRating({ topLabel = false, className }: FormSelec
           onValueChange={(t) => { t && field.handleChange(t.value) }}
         >
           <ComboboxInput aria-invalid={!field.state.meta.isValid} placeholder={m.age_rating()}  />
-          <ComboboxContent aria-invalid={!field.state.meta.isValid}>
+          <ComboboxContent aria-invalid={!field.state.meta.isValid} alignOffset={-1} sideOffset={4} className='min-w-[calc(var(--anchor-width)+--spacing(7.4))]'>
             <ComboboxList>
               {(item) => (
                 <ComboboxItem key={item.value} value={item}>

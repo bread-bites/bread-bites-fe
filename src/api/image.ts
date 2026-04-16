@@ -36,7 +36,7 @@ export const getImageByID = createServerFn()
   .inputValidator(z.uuidv7())
   .handler(async ({ data }) => {
     const client = await BACKEND_API();
-    const res = await client.get<BaseResponse<ImageResponse>>(`${ENDPOINTS.IMAGE}/${data}`,);
+    const res = await client.get<BaseResponse<ImageResponse>>(ENDPOINTS.IMAGE_ID(data),);
     return res.data;
   });
 
@@ -99,5 +99,5 @@ export const deleteImage = createServerFn({ method: 'POST' })
   .inputValidator(deleteImageSchema)
   .handler(async ({ data }) => {
     const client = await BACKEND_API();
-    await client.delete<BaseResponse<{ id: string }>>(`${ENDPOINTS.IMAGE}/${data.id}`);
+    await client.delete<BaseResponse<{ id: string }>>(ENDPOINTS.IMAGE_ID(data.id));
   });

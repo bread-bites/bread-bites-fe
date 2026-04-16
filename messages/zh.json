@@ -53,6 +53,9 @@
   "text_delete_confirm_confirm": "那就删除吧",
   "text_delete_success": "成功删除了 😔",
 
+  "error_header": "WC...",
+  "error_message": "我们也没有预料到会出错，但就这样吧。",
+
   "insert_image_title": "添加图片",
   "insert_image_upload": "上传图片 (最大 {max})",
   "insert_image_info": "附加信息",

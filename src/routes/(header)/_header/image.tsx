@@ -8,12 +8,13 @@ import { useServerFn } from '@tanstack/react-start';
 import { getImage } from '@/api/image';
 import Masonry from '@mui/lab/Masonry';
 import ImageDownloadButton from '@/components/app/image/ImageDownloadButton';
-import ImageDeleteButton from '@/components/app/image/ImageDeleteButton';
-import ImageUpdateButton from '@/components/app/image/ImageUpdateButton';
 import { m } from '@paraglide/messages';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import Chip from '@/components/ui/chip';
+import ImageDetailButton from '@/components/app/image/ImageDetailButton';
+import { ImageResponse } from '@/model/image';
+import { useState } from 'react';
+import { clsx } from 'clsx';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -82,7 +83,7 @@ function RouteComponent() {
               </form.AppField>
               <form.AppField name='tag'>
                 {
-                  (field) => <field.FormNewTagInput className='grow min-w-0'/>
+                  (field) => <field.FormNewTagInput className='grow min-w-0' />
                 }
               </form.AppField>
               <form.FormSubmitButton className='flex-shrink-0'>
@@ -93,9 +94,9 @@ function RouteComponent() {
             {/* Stats bar with subtle design */}
             {data && (
               <div className='flex items-center justify-center text-xs text-muted-foreground/60'>
-                {m.result_image_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_image_page({ 
-                  pageLoaded: (data.pages.length ?? 0).toString(), 
-                  totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString() 
+                {m.result_image_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_image_page({
+                  pageLoaded: (data.pages.length ?? 0).toString(),
+                  totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString()
                 })}
               </div>
             )}
@@ -108,7 +109,7 @@ function RouteComponent() {
         {
           !data ? (
             <div className='w-full flex flex-col gap-4 flex-wrap'>
-              { [...Array(4)].map((_, index) => (
+              {[...Array(4)].map((_, index) => (
                 <Skeleton key={index} className='h-48 rounded-md' />
               ))}
             </div>
@@ -120,56 +121,14 @@ function RouteComponent() {
                 md: 4,
                 sm: 2
               }}
-                spacing={3}
+                spacing={1}
                 defaultHeight={450}
                 defaultColumns={4}
                 defaultSpacing={2}
               >
                 {
                   data.pages.flatMap(x => x.data).map(image => (
-                    <div 
-                      className='group flex flex-col rounded-sm gap-4 p-3 border border-white/10 bg-card/50 backdrop-blur-sm ' 
-                      key={image.id}
-                    >
-                      <div className='overflow-hidden rounded-sm'>
-                        <img 
-                          src={image.image} 
-                          alt={image.name} 
-                          className='w-full h-auto object-cover'
-                        />
-                      </div>
-                      <div>
-                        <p className='text-xs! wrap-break-word'>🍅: {image.source ?? '-'}</p>
-                        <p className='text-xs! wrap-break-word'>📃: {image.description ?? '-'}</p>
-                      </div>
-                      <div className='flex flex-wrap gap-2'>
-                        {
-                          image.tags.map(tag => (
-                            <form.Subscribe key={tag} selector={x => x.values.tag}>
-                              {
-                                (tagValue) => (
-                                  <Chip
-                                    label={tag}
-                                    onClick={() => {
-                                      if (!(tagValue ?? []).includes(tag)) form.setFieldValue('tag', [...(tagValue ?? []), tag])
-                                    }}
-                                  />
-                                )
-                              }
-                            </form.Subscribe>
-                          ))
-                        }
-                      </div>
-                      <div className='flex gap-2'>
-                        <ImageDownloadButton link={image.image} myImage={image.myImage} />
-                        {
-                          image.myImage && <ImageDeleteButton image={image.image} id={image.id} />
-                        }
-                        {
-                          image.myImage && <ImageUpdateButton id={image.id} />
-                        }
-                      </div>
-                    </div>
+                    <ImageCard key={image.id} image={image} />
                   ))
                 }
               </Masonry>
@@ -199,6 +158,39 @@ function RouteComponent() {
             </div>
           )
         }
+      </div>
+    </div>
+  )
+}
+
+function ImageCard({ image }: { image: ImageResponse }) {
+  const [isHidden, setIsHidden] = useState(image.ageRating === AGE_RATING_ENUM.EXPLICIT);
+
+  return (
+    <div
+      className={clsx(
+        'group flex flex-col rounded-sm gap-4 p-3 border-2 bg-card/50 backdrop-blur-sm',
+        {
+          'border-white/10': image.ageRating === AGE_RATING_ENUM.GENERAL,
+          'border-amber-400/50': image.ageRating === AGE_RATING_ENUM.MATURE,
+          'border-red-400/50': image.ageRating === AGE_RATING_ENUM.EXPLICIT,
+        }
+      )}
+      key={image.id}
+    >
+      <div className='overflow-hidden rounded-sm'>
+        <img
+          src={image.image}
+          alt={image.name}
+          onClick={() => image.ageRating === AGE_RATING_ENUM.EXPLICIT && setIsHidden(!isHidden)}
+          className={clsx('w-full h-auto object-cover', {
+            'blur-sm cursor-pointer': isHidden,
+          })}
+        />
+      </div>
+      <div className='flex gap-2'>
+        <ImageDownloadButton link={image.image} myImage={image.myImage} />
+        <ImageDetailButton id={image.id} />
       </div>
     </div>
   )

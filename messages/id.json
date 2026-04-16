@@ -53,6 +53,9 @@
   "text_delete_confirm_confirm": "Hapus aja",
   "text_delete_success": "Dah hilang 😔",
 
+  "error_header": "Taik...",
+  "error_message": "Kita juga ga nyangka bakal error, tapi ya sudahlah.",
+
   "insert_image_title": "Tambah Gambar",
   "insert_image_upload": "Taruh Gambar (Maks {max})",
   "insert_image_info": "Tambah beberapa info",

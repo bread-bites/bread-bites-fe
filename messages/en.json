@@ -53,6 +53,9 @@
   "text_delete_confirm_confirm": "Lost media then",
   "text_delete_success": "Successfully nuked 😔",
 
+  "error_header": "Oh shit...",
+  "error_message": "Damn we did not expect that.",
+
   "insert_image_title": "Insert Image",
   "insert_image_upload": "Upload Image (Max {max})",
   "insert_image_info": "Additional Info",

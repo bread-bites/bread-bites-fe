@@ -1,7 +1,5 @@
 import { getText } from '@/api/text';
 import TextCopyButton from '@/components/app/text/TextCopyButton';
-import TextDeleteButton from '@/components/app/text/TextDeleteButton';
-import TextUpdateButton from '@/components/app/text/TextUpdateButton';
 import { AGE_RATING_ENUM } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
@@ -15,8 +13,9 @@ import z from 'zod';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import Chip from '@/components/ui/chip';
 import { m } from '@paraglide/messages';
+import TextDetailButton from '@/components/app/text/TextDetailButton';
+import { TextResponse } from '@/model/text';
 
 export const Route = createFileRoute('/(header)/_header/text')({
   component: RouteComponent,
@@ -135,55 +134,13 @@ function RouteComponent() {
                 md: 2,
                 sm: 1
               }}
-                spacing={3}
+                spacing={1}
                 defaultColumns={4}
                 defaultSpacing={2}
               >
                 {
                   data.pages.flatMap(x => x.data).map(text => (
-                    <div 
-                      className='group flex flex-col rounded-sm gap-4 p-3 border border-white/10 bg-card/50 backdrop-blur-sm' 
-                      key={text.id}
-                    >
-                      <div className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
-                        'text-xs' : size === 'xs',
-                        'text-sm' : size === 'sm',
-                        'text-md' : size === 'md',
-                      })}>
-                        {text.content}
-                      </div>
-                      <div>
-                        <p className='text-xs! wrap-break-word'>🍅: {text.source ?? '-'}</p>
-                        <p className='text-xs! wrap-break-word'>📃: {text.description ?? '-'}</p>
-                      </div>
-                      <div className='flex flex-wrap gap-2'>
-                        {
-                          text.tags.map(tag => (
-                            <form.Subscribe key={tag} selector={x => x.values.tag}>
-                              {
-                                (tagValue) => (
-                                  <Chip
-                                    label={tag}
-                                    onClick={() => {
-                                      if (!(tagValue ?? []).includes(tag)) form.setFieldValue('tag', [...(tagValue ?? []), tag])
-                                    }}
-                                  />
-                                )
-                              }
-                            </form.Subscribe>
-                          ))
-                        }
-                      </div>
-                      <div className='flex gap-2'>
-                        <TextCopyButton content={text.content} myText={text.myText} />
-                        {
-                          text.myText && <TextDeleteButton content={text.content} id={text.id} />
-                        }
-                        {
-                          text.myText && <TextUpdateButton id={text.id} />
-                        }
-                      </div>
-                    </div>
+                    <TextCard key={text.id} text={text} size={size} />
                   ))
                 }
               </Masonry>
@@ -214,6 +171,51 @@ function RouteComponent() {
           )
         }
       </div>
+    </div>
+  )
+}
+
+function TextCard({ text, size }: { text: TextResponse, size: 'xs' | 'sm' | 'md' }) {
+  const [isRevealed, setIsRevealed] = useState(text.ageRating !== AGE_RATING_ENUM.EXPLICIT);
+
+  return (
+    <div
+      className={clsx(
+        'group flex flex-col rounded-sm gap-4 p-3 border-2 bg-card/50 backdrop-blur-sm',
+        {
+          'border-white/10': text.ageRating === AGE_RATING_ENUM.GENERAL,
+          'border-amber-400/50': text.ageRating === AGE_RATING_ENUM.MATURE,
+          'border-red-400/50': text.ageRating === AGE_RATING_ENUM.EXPLICIT,
+        }
+      )}
+      key={text.id}
+    >
+      {!isRevealed ? (
+        <div className='flex flex-col items-center justify-center py-12 gap-4'>
+          <p className='text-sm text-muted-foreground'>🔞 Explicit Content Warning 🔞</p>
+          <Button 
+            variant='destructive' 
+            size='sm'
+            onClick={() => setIsRevealed(true)}
+          >
+            Click to Reveal (Can't Undo)
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
+            'text-xs' : size === 'xs',
+            'text-sm' : size === 'sm',
+            'text-md' : size === 'md',
+          })}>
+            {text.content}
+          </div>
+          <div className='flex gap-2'>
+            <TextCopyButton content={text.content} myText={text.myText} />
+            <TextDetailButton id={text.id} />
+          </div>
+        </>
+      )}
     </div>
   )
 }

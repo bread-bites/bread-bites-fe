@@ -18,7 +18,7 @@ const config = defineConfig({
     viteReact(),
     paraglideVitePlugin({
       project: "./project.inlang",
-      outdir: "./app/paraglide",
+      outdir: "./src/paraglide",
       outputStructure: "message-modules",
       cookieName: "PARAGLIDE_LOCALE",
       strategy: ["url", "cookie", "preferredLanguage", "baseLocale"],

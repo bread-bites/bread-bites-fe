@@ -1,4 +1,4 @@
-import { paraglideMiddleware } from '@/lang/server'
+import { paraglideMiddleware } from './paraglide/server.js'
 import handler from '@tanstack/react-start/server-entry'
 import { FastResponse } from 'srvx'
 import { patchGlobalRequest } from "srvx/node";

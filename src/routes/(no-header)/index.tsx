@@ -7,6 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { FileTextIcon, ImageIcon } from 'lucide-react';
+import RefinedAlert from '@/components/ui/refined-alert';
 
 const searchParamSchema = z.object({ login: z.boolean().optional() });
 
@@ -42,18 +43,18 @@ function RouteComponent() {
   });
 
   return (
-    <div className='w-full h-full min-h-[100svh] flex flex-col justify-center items-center p-32 max-md:p-12 gap-4'>
+    <div className='w-full h-full min-h-svh flex flex-col justify-center items-center p-32 max-md:p-12 gap-4'>
       {
-        login && <p>{m.main_login()}</p>
+        login && <RefinedAlert variant='destructive'>{m.main_please_login()}</RefinedAlert>
       }
       <h1 className='text-8xl! max-md:text-6xl! text-center font-bold dark'>{m.main_greeting()}</h1>
       <p className='text-2xl! max-md:text-lg! text-center'>{m.main_type_here()}</p>
       <form.AppForm>
-        <form.FormContainer className='flex gap-4 mt-6 max-md:flex-col w-full'>
+        <form.FormContainer className='flex gap-4 mt-6 max-md:flex-col w-full max-md:items-center'>
           <form.AppField name='option'>
             {
               (field) => (
-                <ToggleGroup className='gap-2' onValueChange={(v) => field.handleChange(v[0] as "image" | "text")} value={[field.state.value]}>
+                <ToggleGroup className='gap-2 max-md:justify-center' onValueChange={(v) => field.handleChange(v[0] as "image" | "text")} value={[field.state.value]}>
                   <Tooltip>
                     <TooltipTrigger render={<div></div>}>
                       <ToggleGroupItem className="max-md:grow" value={SelectionType.Image}>

@@ -20,6 +20,7 @@
   "main_type_here": "请输入想要搜索任何图片或文本",
   "main_greeting": "最近怎么样?",
   "main_login": "让我登录",
+  "main_please_login": "你是谁？先证明你配得上进入这里 😤",
   "main_search_button": "搜索",
   "result_more": "更多吧！",
   "result_more_loading": "正在加载更多内容...",
@@ -55,6 +56,8 @@
 
   "error_header": "WC...",
   "error_message": "我们也没有预料到会出错，但就这样吧。",
+  "not_found_header": "这是哪里？",
+  "not_found_message": "我也不知道我们这是哪里...",
 
   "insert_image_title": "添加图片",
   "insert_image_upload": "上传图片 (最大 {max})",

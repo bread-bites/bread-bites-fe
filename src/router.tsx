@@ -6,6 +6,8 @@ import * as TanstackQuery from './integrations/tanstack-query/root-provider'
 import { routeTree } from './routeTree.gen'
 import { deLocalizeUrl, localizeUrl } from '@paraglide/runtime'
 import { ErrorPage } from './error'
+import LoadingPage from './components/common/LoadingPage';
+import { NotFoundPage } from './not-found'
 
 // Create a new router instance
 export const getRouter = () => {
@@ -20,6 +22,8 @@ export const getRouter = () => {
     },
     defaultPreloadStaleTime: 0,
     scrollRestoration: true,
+    defaultPendingComponent: () => (<LoadingPage />),
+    defaultNotFoundComponent: () => (<NotFoundPage />),
     defaultErrorComponent: () => (<ErrorPage />),
     Wrap: (props: { children: React.ReactNode }) => {
       return (

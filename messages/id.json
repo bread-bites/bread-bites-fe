@@ -20,6 +20,7 @@
   "main_greeting": "Halo... Apa kabar?",
   "main_type_here": "Ketik sini deh lu mau gambar atau copypasta apa",
   "main_login": "Aku mau masuk!",
+  "main_please_login": "Lu sapa? Buktikan dulu kalo lu layak masuk sini 😤",
   "main_search_button": "Mari Hunting",
   "result_more": "Mau lagi dunks",
   "result_more_loading": "Lagi nambahin konten nih...",
@@ -55,6 +56,8 @@
 
   "error_header": "Taik...",
   "error_message": "Kita juga ga nyangka bakal error, tapi ya sudahlah.",
+  "not_found_header": "Ini tempat paan?",
+  "not_found_message": "Gile kayaknya terdampar deh lu...",
 
   "insert_image_title": "Tambah Gambar",
   "insert_image_upload": "Taruh Gambar (Maks {max})",

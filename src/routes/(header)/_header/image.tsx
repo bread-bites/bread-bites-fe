@@ -73,12 +73,12 @@ function RouteComponent() {
   return (
     <div className='flex flex-col relative'>
       <form.AppForm>
-        <div className='sticky top-0 z-50 pb-3 inset-0 bg-gradient-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
+        <div className='md:sticky top-0 z-50 pb-3 inset-0 bg-linear-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
           <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
-            <div className='flex w-full gap-4 items-end'>
+            <div className='flex w-full gap-4 items-end max-md:flex-col'>
               <form.AppField name='ageRating'>
                 {
-                  (field) => <field.FormAgeRating className='w-full sm:w-[200px] flex-shrink-0' />
+                  (field) => <field.FormAgeRating className='w-full sm:w-50 shrink-0' />
                 }
               </form.AppField>
               <form.AppField name='tag'>
@@ -86,7 +86,7 @@ function RouteComponent() {
                   (field) => <field.FormNewTagInput className='grow min-w-0' />
                 }
               </form.AppField>
-              <form.FormSubmitButton className='flex-shrink-0'>
+              <form.FormSubmitButton className='shrink-0'>
                 {m.main_search_button()}
               </form.FormSubmitButton>
             </div>
@@ -119,7 +119,8 @@ function RouteComponent() {
                 xl: 6,
                 lg: 5,
                 md: 4,
-                sm: 2
+                sm: 2,
+                xs: 2
               }}
                 spacing={1}
                 defaultHeight={450}
@@ -137,9 +138,9 @@ function RouteComponent() {
         }
         {
           hasNextPage && (
-            <div className='w-full flex px-4'>
+            <div className='w-full flex'>
               <Button
-                className='grow rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-primary/20 hover:to-primary/10 border border-white/10 hover:border-primary/50 transition-all duration-300'
+                className='grow bg-linear-to-r from-muted/50 to-muted/30 hover:from-primary/20 hover:to-primary/10 border border-white/10 hover:border-primary/50 transition-all duration-300'
                 variant='outline'
                 disabled={isFetching}
                 onClick={() => fetchNextPage()}

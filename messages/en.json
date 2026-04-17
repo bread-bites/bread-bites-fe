@@ -20,6 +20,7 @@
   "main_greeting": "Hello World",
   "main_type_here": "Type here to search image or text that you want hehe",
   "main_login": "Lemme In",
+  "main_please_login": "You shall not pass... until you prove yourself worthy 😤",
   "main_search_button": "Search",
   "result_more": "Gimme more!",
   "result_more_loading": "Loading more content...",
@@ -55,6 +56,8 @@
 
   "error_header": "Oh shit...",
   "error_message": "Damn we did not expect that.",
+  "not_found_header": "Where are we?",
+  "not_found_message": "I have no idea where the fuck are we...",
 
   "insert_image_title": "Insert Image",
   "insert_image_upload": "Upload Image (Max {max})",

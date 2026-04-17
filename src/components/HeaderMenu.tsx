@@ -1,4 +1,4 @@
-import { SignOutButton } from '@clerk/clerk-react';
+import { SignOutButton } from "@clerk/react";
 import { Link } from '@tanstack/react-router';
 import { m } from '@paraglide/messages';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from './ui/navigation-menu';

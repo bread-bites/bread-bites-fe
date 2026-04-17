@@ -16,6 +16,7 @@ import { Toggle } from "../ui/toggle";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { getLocalStorage, setLocalStorage } from "@/utilities/frontend-api";
 import { LOCAL_STORAGE_KEY } from "@/constants/local-storage";
+import { isMobile } from "react-device-detect";
 
 interface FormNewTagInputProps {
   label?: string,
@@ -53,8 +54,9 @@ export default function FormNewTagInput({ label, topLabel = false, className = '
     setInputState(value.trim().replaceAll(' ', '_').toLowerCase());
   }
 
-  const handleOnEnterCustom = (e: BaseUIEvent<React.KeyboardEvent<HTMLInputElement>>) => {
-    if ((e.nativeEvent.key === 'Enter' || e.nativeEvent.key === ' ') && tempValue.trim().length > 0) {
+  // Unreliable due to Android IME
+  const handleOnKeyDown = (e: BaseUIEvent<React.KeyboardEvent<HTMLInputElement>>) => {
+    if (!isMobile && (e.nativeEvent.key === 'Enter' || e.nativeEvent.key === ' ') && tempValue.trim().length > 0) {
       e.preventDefault();
       const newTag = tempValue.trim().replaceAll(' ', '_').toLowerCase();
       if (newTag.length > 0 && !(field.state.value || []).includes(newTag)) {
@@ -62,6 +64,25 @@ export default function FormNewTagInput({ label, topLabel = false, className = '
       }
       setInputState('');
       setTempValue('');
+      debounced('');
+    }
+  }
+
+  const handleOnTyping = (e: BaseUIEvent<React.ChangeEvent<HTMLInputElement, HTMLInputElement>>) => {
+    const value = e.target.value;
+    if (isMobile && (value.endsWith(' ') || value.endsWith('\n'))) {
+      const newTag = tempValue.trim().replaceAll(' ', '_').toLowerCase();
+      if (newTag.length > 0 && !(field.state.value || []).includes(newTag)) {
+        handleOnChange([...(field.state.value || []), newTag]);
+      }
+      setInputState('');
+      setTempValue('');
+      debounced('');
+    }
+    else {
+      setInputState(value);
+      setTempValue(value);
+      debounced(value);
     }
   }
 
@@ -84,11 +105,8 @@ export default function FormNewTagInput({ label, topLabel = false, className = '
               ref={ref}
               value={tempValue}
               placeholder={label ?? m.form_tags_label()}
-              onKeyDown={(e) => handleOnEnterCustom(e)}
-              onChange={(e) => {
-                setTempValue(e.target.value);
-                debounced(e.target.value);
-              }}
+              onChange={handleOnTyping}
+              onKeyDown={handleOnKeyDown}
             />
             <div className="absolute right-2">
               <Tooltip>

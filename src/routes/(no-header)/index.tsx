@@ -1,7 +1,7 @@
 import { useAppForm } from '@/hooks/form-hook'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import z from 'zod'
-import { SignedOut, SignInButton } from '@clerk/clerk-react';
+import { Show, SignInButton } from "@clerk/react";
 import { m } from "@paraglide/messages";
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -85,15 +85,15 @@ function RouteComponent() {
         </form.FormContainer>
       </form.AppForm>
       <div className='flex gap-8'>
-        <SignedOut>
+        <Show when="signed-out">
           <SignInButton>
             <Button>{m.main_login()}</Button>
           </SignInButton>
-        </SignedOut>
+        </Show>
         <form.AppForm>
           <form.FormSubmitButton onClick={() => form.handleSubmit()}>{m.main_search_button()}</form.FormSubmitButton>
         </form.AppForm>
       </div>
     </div>
-  )
+  );
 }

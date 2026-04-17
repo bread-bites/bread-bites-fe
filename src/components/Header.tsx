@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react'
+import { Show, SignInButton } from "@clerk/react";
 import HeaderMenu from './HeaderMenu'
 import { Link } from '@tanstack/react-router'
 import { m } from '@paraglide/messages';
@@ -44,16 +44,16 @@ export default function Header() {
 
           <HeaderLanguage/>
 
-          <SignedOut>
+          <Show when="signed-out">
             <SignInButton>
               <Button variant='success'>{m.main_login()}</Button>
             </SignInButton>
-          </SignedOut>
-          <SignedIn>
+          </Show>
+          <Show when="signed-in">
             <HeaderMenu />
-          </SignedIn>
+          </Show>
         </div>
       </div>
     </div>
-  )
+  );
 }

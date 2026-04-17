@@ -11,7 +11,7 @@ import FormNewTagInput from '@/components/form/FormNewTagInput'
 import FormAgeRating from '@/components/form/FormAgeRating'
 import FormNumberField from '@/components/form/FormNumberField'
 
-export const { useAppForm } = createFormHook({
+export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldComponents: {
     FormTextField,
     FormNumberField,

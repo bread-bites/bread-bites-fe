@@ -1,6 +1,6 @@
 import { getText } from '@/api/text';
 import TextCopyButton from '@/components/app/text/TextCopyButton';
-import { AGE_RATING_ENUM } from '@/constants/age-rating';
+import { AGE_RATING_ENUM, convertStringIntToAgeRating } from '@/constants/age-rating';
 import { QUERY_KEY } from '@/constants/query-key';
 import { useAppForm } from '@/hooks/form-hook';
 import Masonry from '@mui/lab/Masonry';
@@ -16,6 +16,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { m } from '@paraglide/messages';
 import TextDetailButton from '@/components/app/text/TextDetailButton';
 import { TextResponse } from '@/model/text';
+import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
+import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
+import { getLocalStorage, setLocalStorage } from '@/utilities/frontend-api';
 
 export const Route = createFileRoute('/(header)/_header/text')({
   component: RouteComponent,
@@ -33,7 +36,7 @@ function RouteComponent() {
   const { tag: defaultTag, ageRating: defaultAgeRating } = Route.useSearch() as z.infer<typeof searchParamSchema>;
   const defaultValue: searchParamSchemaType = {
     pageSize: 20,
-    ageRating: defaultAgeRating ?? AGE_RATING_ENUM.GENERAL,
+    ageRating: defaultAgeRating ?? convertStringIntToAgeRating(getLocalStorage(LOCAL_STORAGE_KEY.AGE_RATING) ?? '') ?? AGE_RATING_ENUM.GENERAL,
     tag: defaultTag ?? [],
   }
 
@@ -67,55 +70,41 @@ function RouteComponent() {
     getNextPageParam: (lastPage) => lastPage.pagination.isLastPage ? undefined : lastPage.pagination.currentPage + 1
   });
 
+  const handleOnTextSizeChange = (value: 'xs' | 'sm' | 'md') => {
+    setSize(value);
+    setLocalStorage(LOCAL_STORAGE_KEY.TEXT_SIZE, value);
+  }
 
   return (
     <div className='flex flex-col relative'>
       <form.AppForm>
-        <div className='md:sticky top-0 z-50 pb-3 inset-0 bg-linear-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
-          <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
-            <div className='flex w-full gap-4 items-end max-md:flex-col'>
-              <form.AppField name='ageRating'>
-                {
-                  (field) => <field.FormAgeRating className='w-full sm:w-50 shrink-0' />
-                }
-              </form.AppField>
-              <form.AppField name='tag'>
-                {
-                  (field) => <field.FormNewTagInput className='grow min-w-0'/>
-                }
-              </form.AppField>
-              <form.FormSubmitButton className='shrink-0'>
-                {m.main_search_button()}
-              </form.FormSubmitButton>
-            </div>
-
-            {/* Stats bar and font size controls */}
-            <div className='flex items-center justify-between gap-4'>
-              {data && (
-                <div className='flex items-center text-xs text-muted-foreground/60'>
-                  {m.result_text_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_text_page({ pageLoaded: data.pages.length, totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize) })}
-                </div>
-              )}
-              <div className='flex items-center gap-2 ml-auto'>
-                <span className='text-xs text-muted-foreground/60'>{m.text_size_label()}</span>
-                <ToggleGroup
-                  className='border border-white/10'
-                  onValueChange={(value) => value[0] && setSize(value[0] as unknown as 'xs' | 'sm' | 'md')}
-                >
-                  <ToggleGroupItem value='xs' className='h-8 px-3 text-xs'>
-                    {m.text_size_tiny()}
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value='sm' className='h-8 px-3 text-xs'>
-                    {m.text_size_small()}
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value='md' className='h-8 px-3 text-xs'>
-                    {m.text_size_medium()}
-                  </ToggleGroupItem>
-                </ToggleGroup>
+        <MainMenuSearchFields form={form} fields={{ ageRating: 'ageRating', tag: 'tag' }}>
+          <div className='flex items-center justify-between gap-4'>
+            {data && (
+              <div className='flex items-center text-xs text-muted-foreground/60'>
+                {m.result_text_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_text_page({ pageLoaded: data.pages.length, totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize) })}
               </div>
+            )}
+            <div className='flex items-center gap-2 ml-auto'>
+              <span className='text-xs text-muted-foreground/60'>{m.text_size_label()}</span>
+              <ToggleGroup
+                defaultValue={[getLocalStorage(LOCAL_STORAGE_KEY.TEXT_SIZE) ?? 'xs']}
+                className='border border-white/10'
+                onValueChange={(value) => value[0] && handleOnTextSizeChange(value[0] as unknown as 'xs' | 'sm' | 'md')}
+              >
+                <ToggleGroupItem value='xs' className='h-8 px-3 text-xs'>
+                  {m.text_size_tiny()}
+                </ToggleGroupItem>
+                <ToggleGroupItem value='sm' className='h-8 px-3 text-xs'>
+                  {m.text_size_small()}
+                </ToggleGroupItem>
+                <ToggleGroupItem value='md' className='h-8 px-3 text-xs'>
+                  {m.text_size_medium()}
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
-          </form.FormContainer>
-        </div>
+          </div>
+        </MainMenuSearchFields>
       </form.AppForm>
 
       {/* Result area (infinite query) with enhanced styling */}
@@ -123,7 +112,7 @@ function RouteComponent() {
         {
           !data ? (
             <div className='w-full flex flex-col gap-4 flex-wrap'>
-              { [...Array(4)].map((_, index) => (
+              {[...Array(4)].map((_, index) => (
                 <Skeleton key={index} className='h-48 rounded-md' />
               ))}
             </div>
@@ -193,8 +182,8 @@ function TextCard({ text, size }: { text: TextResponse, size: 'xs' | 'sm' | 'md'
       {!isRevealed ? (
         <div className='flex flex-col items-center justify-center py-12 gap-4'>
           <p className='text-sm text-muted-foreground'>🔞 Explicit Content Warning 🔞</p>
-          <Button 
-            variant='destructive' 
+          <Button
+            variant='destructive'
             size='sm'
             onClick={() => setIsRevealed(true)}
           >
@@ -204,9 +193,9 @@ function TextCard({ text, size }: { text: TextResponse, size: 'xs' | 'sm' | 'md'
       ) : (
         <>
           <div className={clsx('border-2 border-gray-400/30 rounded-sm text-justify p-2 whitespace-pre-line', {
-            'text-xs' : size === 'xs',
-            'text-sm' : size === 'sm',
-            'text-md' : size === 'md',
+            'text-xs': size === 'xs',
+            'text-sm': size === 'sm',
+            'text-md': size === 'md',
           })}>
             {text.content}
           </div>

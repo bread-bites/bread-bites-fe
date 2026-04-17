@@ -35,6 +35,8 @@
   "form_tags_label": "Tag",
   "form_tags_placeholder": "Ketik untuk mencari tag",
   "form_tags_not_found": "Yah.. gadapet",
+  "form_tags_search_disabled": "Lu udah matiin fitur pencarian tag",
+  "form_tags_search_tooltip": "Aktifin / matiin fitur pencarian tag",
   "main_add_image": "Tambah Gambar",
   "main_add_text": "Tambah Copypasta",
   "main_logout": "Jumpa lagi",

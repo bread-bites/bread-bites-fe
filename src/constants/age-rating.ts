@@ -17,3 +17,11 @@ export function getAgeRatingLabel(ageRating: AGE_RATING_ENUM_TYPE_VALUE) {
   return ageRating === AGE_RATING_ENUM.GENERAL ?
     m.age_rating_general() : ageRating === AGE_RATING_ENUM.MATURE ? m.age_rating_mature() : m.age_rating_explicit();
 }
+
+export function convertStringIntToAgeRating(stringInt: string): AGE_RATING_ENUM_TYPE_VALUE | null {
+  const intValue = parseInt(stringInt);
+  if (intValue === AGE_RATING_ENUM.GENERAL) return AGE_RATING_ENUM.GENERAL;
+  if (intValue === AGE_RATING_ENUM.MATURE) return AGE_RATING_ENUM.MATURE;
+  if (intValue === AGE_RATING_ENUM.EXPLICIT) return AGE_RATING_ENUM.EXPLICIT;
+  return null;
+}

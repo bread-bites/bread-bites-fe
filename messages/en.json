@@ -35,6 +35,8 @@
   "form_tags_label": "Tags",
   "form_tags_placeholder": "Type to search for tags",
   "form_tags_not_found": "No tags found",
+  "form_tags_search_disabled": "You disabled the tag searching",
+  "form_tags_search_tooltip": "Enable / disable tag searching",
   "main_add_image": "Add New Image",
   "main_add_text": "Add New Text",
   "main_logout": "Bye",

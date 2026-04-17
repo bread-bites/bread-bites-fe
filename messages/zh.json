@@ -35,6 +35,8 @@
   "form_tags_label": "标签",
   "form_tags_placeholder": "输入以搜索标签",
   "form_tags_not_found": "未找到标签",
+  "form_tags_search_disabled": "你已禁用标签搜索",
+  "form_tags_search_tooltip": "启用/禁用标签搜索",
   "main_add_image": "添加新图片",
   "main_add_text": "添加新文本",
   "main_logout": "拜拜",

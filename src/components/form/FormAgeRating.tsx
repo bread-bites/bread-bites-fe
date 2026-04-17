@@ -4,6 +4,8 @@ import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import { AGE_RATING_ENUM_TYPE_VALUE, AGE_RATING_SELECT, getAgeRatingLabel } from "@/constants/age-rating";
 import { m } from "@paraglide/messages";
 import clsx from "clsx";
+import { setLocalStorage } from "@/utilities/frontend-api";
+import { LOCAL_STORAGE_KEY } from "@/constants/local-storage";
 
 interface FormSelectProps {
   topLabel?: boolean,
@@ -13,6 +15,11 @@ interface FormSelectProps {
 export default function FormAgeRating({ topLabel = false, className }: FormSelectProps) {
   const field = useFieldContext<AGE_RATING_ENUM_TYPE_VALUE>();
 
+  const handleChange = (value: AGE_RATING_ENUM_TYPE_VALUE) => {
+    field.handleChange(value);
+    setLocalStorage(LOCAL_STORAGE_KEY.AGE_RATING, value.toString());
+  }
+
   return (
     <Field className={clsx("flex flex-col gap-1", className)}>
       {topLabel && <FieldLabel>{m.age_rating()}</FieldLabel>}
@@ -21,7 +28,7 @@ export default function FormAgeRating({ topLabel = false, className }: FormSelec
           items={AGE_RATING_SELECT}
           itemToStringLabel={({ value }) => getAgeRatingLabel(value)}
           value={AGE_RATING_SELECT.find(x => x.value === field.state.value) ?? AGE_RATING_SELECT[0]}
-          onValueChange={(t) => { t && field.handleChange(t.value) }}
+          onValueChange={(t) => { t && handleChange(t.value) }}
         >
           <ComboboxInput aria-invalid={!field.state.meta.isValid} placeholder={m.age_rating()}  />
           <ComboboxContent aria-invalid={!field.state.meta.isValid} alignOffset={-1} sideOffset={4} className='min-w-[calc(var(--anchor-width)+--spacing(7.4))]'>

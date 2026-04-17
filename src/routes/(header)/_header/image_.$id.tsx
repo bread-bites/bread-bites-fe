@@ -1,6 +1,6 @@
 import { getImageByID } from '@/api/image'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { AGE_RATING_ENUM, getAgeRatingLabel } from '@/constants/age-rating';
+import { AGE_RATING_ENUM, convertStringIntToAgeRating, getAgeRatingLabel } from '@/constants/age-rating';
 import { useAppForm } from '@/hooks/form-hook';
 import { z } from 'zod';
 import { m } from '@paraglide/messages';
@@ -9,6 +9,9 @@ import ImageDeleteButton from '@/components/app/image/ImageDeleteButton';
 import ImageUpdateButton from '@/components/app/image/ImageUpdateButton';
 import Chip from '@/components/ui/chip';
 import { Calendar } from 'lucide-react';
+import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
+import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
+import { getLocalStorage } from '@/utilities/frontend-api';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -28,7 +31,7 @@ function RouteComponent() {
   const navigate = useNavigate();
 
   const defaultValue: searchParamSchemaType = {
-    ageRating: defaultAgeRating ?? AGE_RATING_ENUM.GENERAL,
+    ageRating: defaultAgeRating ?? convertStringIntToAgeRating(getLocalStorage(LOCAL_STORAGE_KEY.AGE_RATING) ?? '') ?? AGE_RATING_ENUM.GENERAL,
     tag: defaultTag ?? [],
   }
 
@@ -48,25 +51,7 @@ function RouteComponent() {
   return (
     <div className='flex flex-col relative'>
       <form.AppForm>
-        <div className='sticky top-0 z-50 pb-3 inset-0 bg-linear-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
-          <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
-            <div className='flex w-full gap-4 items-end'>
-              <form.AppField name='ageRating'>
-                {
-                  (field) => <field.FormAgeRating className='w-full sm:w-50 shrink-0' />
-                }
-              </form.AppField>
-              <form.AppField name='tag'>
-                {
-                  (field) => <field.FormNewTagInput className='grow min-w-0'/>
-                }
-              </form.AppField>
-              <form.FormSubmitButton className='shrink-0'>
-                {m.main_search_button()}
-              </form.FormSubmitButton>
-            </div>
-          </form.FormContainer>
-        </div>
+        <MainMenuSearchFields form={form} fields={{ ageRating: 'ageRating', tag: 'tag' }} />
       </form.AppForm>
 
       {/* Image Detail Content */}

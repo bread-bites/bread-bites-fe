@@ -1,4 +1,4 @@
-import { AGE_RATING_ENUM } from '@/constants/age-rating';
+import { AGE_RATING_ENUM, convertStringIntToAgeRating } from '@/constants/age-rating';
 import { useAppForm } from '@/hooks/form-hook';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
@@ -15,6 +15,9 @@ import ImageDetailButton from '@/components/app/image/ImageDetailButton';
 import { ImageResponse } from '@/model/image';
 import { useState } from 'react';
 import { clsx } from 'clsx';
+import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
+import { getLocalStorage } from '@/utilities/frontend-api';
+import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -36,7 +39,7 @@ function RouteComponent() {
   const { tag: defaultTag, ageRating: defaultAgeRating } = Route.useSearch() as z.infer<typeof searchParamSchema>;
   const defaultValue: searchParamSchemaType = {
     pageSize: 20,
-    ageRating: defaultAgeRating ?? AGE_RATING_ENUM.GENERAL,
+    ageRating: defaultAgeRating ?? convertStringIntToAgeRating(getLocalStorage(LOCAL_STORAGE_KEY.AGE_RATING) ?? '') ?? AGE_RATING_ENUM.GENERAL,
     tag: defaultTag ?? [],
   }
 
@@ -73,35 +76,16 @@ function RouteComponent() {
   return (
     <div className='flex flex-col relative'>
       <form.AppForm>
-        <div className='md:sticky top-0 z-50 pb-3 inset-0 bg-linear-to-b from-background via-background/95 to-background/80 backdrop-blur-xl border-b border-b-white/10'>
-          <form.FormContainer className='relative flex w-full flex-col gap-3 px-6 pt-5 pb-4'>
-            <div className='flex w-full gap-4 items-end max-md:flex-col'>
-              <form.AppField name='ageRating'>
-                {
-                  (field) => <field.FormAgeRating className='w-full sm:w-50 shrink-0' />
-                }
-              </form.AppField>
-              <form.AppField name='tag'>
-                {
-                  (field) => <field.FormNewTagInput className='grow min-w-0' />
-                }
-              </form.AppField>
-              <form.FormSubmitButton className='shrink-0'>
-                {m.main_search_button()}
-              </form.FormSubmitButton>
+        <MainMenuSearchFields form={form} fields={{ ageRating: 'ageRating', tag: 'tag' }}>
+          {data && (
+            <div className='flex items-center justify-center text-xs text-muted-foreground/60'>
+              {m.result_image_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_image_page({
+                pageLoaded: (data.pages.length ?? 0).toString(),
+                totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString()
+              })}
             </div>
-
-            {/* Stats bar with subtle design */}
-            {data && (
-              <div className='flex items-center justify-center text-xs text-muted-foreground/60'>
-                {m.result_image_total({ totalData: data.pages[0].pagination.totalData })} • {m.result_image_page({
-                  pageLoaded: (data.pages.length ?? 0).toString(),
-                  totalPages: Math.ceil(data.pages[0].pagination.totalData / data.pages[0].pagination.pageSize).toString()
-                })}
-              </div>
-            )}
-          </form.FormContainer>
-        </div>
+          )}
+        </MainMenuSearchFields>
       </form.AppForm>
 
       {/* Result area (infinite query) with enhanced styling */}

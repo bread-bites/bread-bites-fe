@@ -12,6 +12,7 @@ import { Calendar } from 'lucide-react';
 import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
 import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
 import { getLocalStorage } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -22,6 +23,21 @@ type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 export const Route = createFileRoute('/(header)/_header/image_/$id')({
   component: RouteComponent,
   loader: async ({ params }) => (await getImageByID({ data: params.id })).data,
+  head: ({ loaderData }) => createHead(
+    loaderData?.name ?? m.loading(),
+    [
+      // Open Graph
+      { property: 'og:title', content: loaderData?.name ?? '-' },
+      { property: 'og:description', content: loaderData?.description ?? '-' },
+      { property: 'og:image', content: loaderData?.image ?? '' },
+      { property: 'og:type', content: 'article' },
+      // Twitter Card
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: loaderData?.name ?? '-' },
+      { name: 'twitter:description', content: loaderData?.description ?? '-' },
+      { name: 'twitter:image', content: loaderData?.image ?? '' },
+    ]
+  ),
   validateSearch: (search) => searchParamSchema.parse(search),
 })
 

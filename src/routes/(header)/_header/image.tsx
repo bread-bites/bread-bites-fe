@@ -18,6 +18,7 @@ import { clsx } from 'clsx';
 import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
 import { getLocalStorage } from '@/utilities/frontend-api';
 import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
+import { createHead } from '@/utilities/head';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -28,6 +29,7 @@ type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 
 export const Route = createFileRoute('/(header)/_header/image')({
   component: RouteComponent,
+  head: () => createHead(m.image()),
   loader: () => ({
     formAgeLabel: m.age_rating(),
     mainSearchButton: m.main_search_button()

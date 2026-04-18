@@ -8,6 +8,7 @@ import useModal, { usualErrorHandler } from '@/hooks/modal-hook-provider';
 import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
 import { objectToFormData } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 import { m } from '@paraglide/messages';
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
@@ -16,6 +17,7 @@ import { useServerFn } from '@tanstack/react-start';
 
 export const Route = createFileRoute('/(header)/_header/_auth/image/$id/update')({
   component: RouteComponent,
+  head: () => createHead(m.update_image_title()),
   loader: async ({ params }) => (await getImageByID({ data: params.id })).data,
 });
 

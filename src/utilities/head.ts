@@ -1,0 +1,15 @@
+import { m } from "@paraglide/messages";
+import { AnyRouteMatch } from "@tanstack/react-router";
+
+export const createHead = (title: string, other?: AnyRouteMatch['meta']) => ({
+  meta: [
+    {
+      title: `${title} - ${m.website_title()}`
+    },
+    {
+      name: 'description',
+      content: m.website_description()
+    },
+    ...(other ?? [])
+  ] as AnyRouteMatch['meta'],
+})

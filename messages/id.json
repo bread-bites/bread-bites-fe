@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "website_title": "Bread Bites",
+  "website_description": "Cuma website kecil buat dokumentasi copypasta sama gambar kocak. Dikasih fitur tagging biar enak nyarinya. Comot aja sih kl mau.",
   "loading": "Tunggu bentar...",
   "success": "Sukses",
   "error": "Aduh...",
@@ -32,6 +34,8 @@
   "text_size_tiny": "Mini",
   "text_size_small": "Kecil",
   "text_size_medium": "Sedang",
+  "text_explicit_warning": "🔞 Konten NSFW 🔞",
+  "text_explicit_reveal": "Klik buat munculin (Gabisa dihide lagi 😳)",
   "form_tags_label": "Tag",
   "form_tags_placeholder": "Ketik untuk mencari tag",
   "form_tags_not_found": "Yah.. gadapet",

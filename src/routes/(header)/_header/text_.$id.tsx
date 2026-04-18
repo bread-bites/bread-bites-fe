@@ -12,6 +12,7 @@ import { Calendar } from 'lucide-react';
 import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
 import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
 import { getLocalStorage } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 
 const searchParamSchema = z.object({
   tag: z.array(z.string()).optional(),
@@ -22,6 +23,18 @@ type searchParamSchemaType = z.infer<typeof searchParamSchema>;
 export const Route = createFileRoute('/(header)/_header/text_/$id')({
   component: RouteComponent,
   loader: async ({ params }) => (await getTextByID({ data: params.id })).data,
+  head: ({ loaderData }) => createHead(loaderData?.title ?? m.loading(),
+    [
+      // Open Graph
+      { property: 'og:title', content: loaderData?.title ?? '-' },
+      { property: 'og:description', content: loaderData?.description ?? '-' },
+      { property: 'og:type', content: 'article' },
+      // Twitter Card
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: loaderData?.title ?? '-' },
+      { name: 'twitter:description', content: loaderData?.description ?? '-' },
+    ]
+  ),
   validateSearch: (search) => searchParamSchema.parse(search),
 })
 
@@ -84,21 +97,21 @@ function RouteComponent() {
 
             {/* Source */}
             <div className='flex flex-col gap-2'>
-              <h2 className='text-sm font-semibold text-muted-foreground'>🍅 { m.source() }</h2>
+              <h2 className='text-sm font-semibold text-muted-foreground'>🍅 {m.source()}</h2>
               <p className='text-base wrap-break-word'>{data.source ?? '-'}</p>
             </div>
 
             {/* Description */}
             {data.description && (
               <div className='flex flex-col gap-2'>
-                <h2 className='text-sm font-semibold text-muted-foreground'>📃 { m.description() }</h2>
+                <h2 className='text-sm font-semibold text-muted-foreground'>📃 {m.description()}</h2>
                 <p className='text-base wrap-break-word whitespace-pre-wrap'>{data.description}</p>
               </div>
             )}
 
             {/* Tags */}
             <div className='flex flex-col gap-3'>
-              <h2 className='text-sm font-semibold text-muted-foreground'>🏷️ { m.form_tags_label() }</h2>
+              <h2 className='text-sm font-semibold text-muted-foreground'>🏷️ {m.form_tags_label()}</h2>
               <div className='flex flex-wrap gap-2'>
                 {
                   data.tags.map(tag => (

@@ -8,11 +8,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button';
 import { FileTextIcon, ImageIcon } from 'lucide-react';
 import RefinedAlert from '@/components/ui/refined-alert';
+import { createHead } from '@/utilities/head';
 
 const searchParamSchema = z.object({ login: z.boolean().optional() });
 
 export const Route = createFileRoute('/(no-header)/')({
   component: RouteComponent,
+  head: () => createHead(m.main_greeting()),
   validateSearch: (d) => searchParamSchema.parse(d)
 });
 

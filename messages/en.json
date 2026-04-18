@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "website_title": "Bread Bites",
+  "website_description": "Just a website to archive every reaction images and copypasta that I found on the internet that are tagged for convenience. Feel free to steal the content here, that's what it's for!",
   "loading": "Loading...",
   "success": "Success",
   "error": "Uh oh...",
@@ -32,6 +34,8 @@
   "text_size_tiny": "Tiny",
   "text_size_small": "Small",
   "text_size_medium": "Medium",
+  "text_explicit_warning": "🔞 Explicit Content Warning 🔞",
+  "text_explicit_reveal": "Click to Reveal (Can't Undo)",
   "form_tags_label": "Tags",
   "form_tags_placeholder": "Type to search for tags",
   "form_tags_not_found": "No tags found",

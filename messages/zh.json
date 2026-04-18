@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "website_title": "Bread Bites",
+  "website_description": "只是一个用来存档我在网上找到的每个反应图片和copypasta的网站，这些内容都被标记了以方便使用。随意偷取这里的内容，这就是它的用途！",
   "loading": "加载中...",
   "success": "成功",
   "error": "哎呀...",
@@ -32,6 +34,8 @@
   "text_size_tiny": "微小",
   "text_size_small": "小",
   "text_size_medium": "中等",
+  "text_explicit_warning": "🔞 明确内容警告 🔞",
+  "text_explicit_reveal": "点击显示 (无法撤销 😳)",
   "form_tags_label": "标签",
   "form_tags_placeholder": "输入以搜索标签",
   "form_tags_not_found": "未找到标签",

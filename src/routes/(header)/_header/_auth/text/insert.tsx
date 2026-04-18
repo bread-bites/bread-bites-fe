@@ -8,14 +8,19 @@ import useModal, { usualErrorHandler } from '@/hooks/modal-hook-provider';
 import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
 import { objectToFormData } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 import { m } from '@paraglide/messages';
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start';
 
 export const Route = createFileRoute('/(header)/_header/_auth/text/insert')({
   component: RouteComponent,
+  head: () => createHead(m.insert_text_title()),
+  beforeLoad: ({ context }) => {
+    if (!context.userID) throw redirect({ to: '/', search: { login: true } });
+  }
 });
 
 const formOption = formOptions({

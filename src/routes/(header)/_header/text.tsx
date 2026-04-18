@@ -19,9 +19,11 @@ import { TextResponse } from '@/model/text';
 import MainMenuSearchFields from '@/components/common/MainMenuSearchFields';
 import { LOCAL_STORAGE_KEY } from '@/constants/local-storage';
 import { getLocalStorage, setLocalStorage } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 
 export const Route = createFileRoute('/(header)/_header/text')({
   component: RouteComponent,
+  head: () => createHead(m.text()),
 });
 
 const searchParamSchema = z.object({
@@ -181,13 +183,13 @@ function TextCard({ text, size }: { text: TextResponse, size: 'xs' | 'sm' | 'md'
     >
       {!isRevealed ? (
         <div className='flex flex-col items-center justify-center py-12 gap-4'>
-          <p className='text-sm text-muted-foreground'>🔞 Explicit Content Warning 🔞</p>
+          <p className='text-sm text-muted-foreground'>{m.text_explicit_warning()}</p>
           <Button
             variant='destructive'
             size='sm'
             onClick={() => setIsRevealed(true)}
           >
-            Click to Reveal (Can't Undo)
+            {m.text_explicit_reveal()}
           </Button>
         </div>
       ) : (

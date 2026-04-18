@@ -1,3 +1,6 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Disallow: /image/
+Disallow: /text/
+
+Sitemap: https://bread.doctor-neuron.blog/sitemap.xml

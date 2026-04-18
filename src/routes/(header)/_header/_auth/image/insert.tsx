@@ -10,6 +10,7 @@ import { getContext } from '@/integrations/tanstack-query/root-provider';
 import { AxiosCustomError } from '@/model/axios-error';
 import { friendlySize } from '@/utilities/file';
 import { objectToFormData } from '@/utilities/frontend-api';
+import { createHead } from '@/utilities/head';
 import { m } from '@paraglide/messages';
 import { formOptions } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
@@ -19,6 +20,7 @@ import { useServerFn } from '@tanstack/react-start';
 export const Route = createFileRoute('/(header)/_header/_auth/image/insert')({
   component: RouteComponent,
   loader: () => getConfig(),
+  head: () => createHead(m.insert_image_title()),
   beforeLoad: ({ context }) => {
     if (!context.userID) throw redirect({ to: '/', search: { login: true } });
   }

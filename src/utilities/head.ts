@@ -8,7 +8,7 @@ export const createHead = (title: string, other?: AnyRouteMatch['meta'], descrip
     },
     {
       name: 'description',
-      content: m.website_description()
+      content: description ?? m.website_description()
     },
     ...(other ?? [])
   ] as AnyRouteMatch['meta'],

@@ -27,13 +27,13 @@ export const Route = createFileRoute('/(header)/_header/text_/$id')({
     [
       // Open Graph
       { property: 'og:title', content: loaderData?.title ?? '-' },
-      { property: 'og:description', content: loaderData?.description ?? '-' },
+      { property: 'og:description', content: loaderData?.content?.substring(0, 100)?.concat('...') ?? '-' },
       { property: 'og:type', content: 'article' },
       // Twitter Card
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: loaderData?.title ?? '-' },
-      { name: 'twitter:description', content: loaderData?.description ?? '-' },
-    ]
+      { name: 'twitter:description', content: loaderData?.content?.substring(0, 100)?.concat('...') ?? '-' },
+    ], loaderData?.content?.substring(0, 100)?.concat('...') ?? m.website_no_description()
   ),
   validateSearch: (search) => searchParamSchema.parse(search),
 })

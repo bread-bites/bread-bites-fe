@@ -36,7 +36,7 @@ export const Route = createFileRoute('/(header)/_header/image_/$id')({
       { name: 'twitter:title', content: loaderData?.name ?? '-' },
       { name: 'twitter:description', content: loaderData?.description ?? '-' },
       { name: 'twitter:image', content: loaderData?.image ?? '' },
-    ]
+    ], loaderData?.description ?? m.website_no_description()
   ),
   validateSearch: (search) => searchParamSchema.parse(search),
 })

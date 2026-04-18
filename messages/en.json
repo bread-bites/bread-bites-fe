@@ -1,7 +1,8 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "website_title": "Bread Bites",
-  "website_description": "Just a website to archive every reaction images and copypasta that I found on the internet that are tagged for convenience. Feel free to steal the content here, that's what it's for!",
+  "website_description": "Just a website to archive every reaction images and copypasta. Feel free to steal the content here, that's what it's for!",
+  "website_no_description": "No description provided",
   "loading": "Loading...",
   "success": "Success",
   "error": "Uh oh...",

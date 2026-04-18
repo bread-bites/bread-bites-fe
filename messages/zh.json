@@ -2,6 +2,7 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "website_title": "Bread Bites",
   "website_description": "只是一个用来存档我在网上找到的每个反应图片和copypasta的网站，这些内容都被标记了以方便使用。随意偷取这里的内容，这就是它的用途！",
+  "website_no_description": "没有提供描述",
   "loading": "加载中...",
   "success": "成功",
   "error": "哎呀...",
